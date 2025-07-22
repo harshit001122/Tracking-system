@@ -144,7 +144,7 @@ export function EndMeetingModal({
 
   const handleClose = () => {
     if (isSubmitting || isLoading) return;
-    
+
     setFormData({
       customerName: "",
       customerEmployeeName: "",
@@ -155,6 +155,9 @@ export function EndMeetingModal({
       discussion: "",
     });
     setErrors({});
+    setSelectedCustomerEmployee(null);
+    setSelectedCustomer(null);
+    setUseManualEntry(false);
     onClose();
   };
 
