@@ -97,7 +97,20 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
         customerName,
         customerId,
       };
-      setTempEmployees(prev => [...prev, tempEmployee]);
+
+      console.log('Adding temporary employee:', tempEmployee);
+
+      setTempEmployees(prev => {
+        const updated = [...prev, tempEmployee];
+        // Persist to localStorage
+        try {
+          localStorage.setItem('tempCustomerEmployees', JSON.stringify(updated));
+        } catch (error) {
+          console.error('Error saving temporary employees:', error);
+        }
+        console.log('Updated temp employees:', updated);
+        return updated;
+      });
     };
 
     // Expose refresh function and addTempEmployee via ref
