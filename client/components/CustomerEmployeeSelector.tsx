@@ -114,10 +114,21 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       });
     };
 
+    // Clear temporary employees
+    const clearTempEmployees = () => {
+      setTempEmployees([]);
+      try {
+        localStorage.removeItem('tempCustomerEmployees');
+      } catch (error) {
+        console.error('Error clearing temporary employees:', error);
+      }
+    };
+
     // Expose refresh function and addTempEmployee via ref
     useImperativeHandle(ref, () => ({
       refreshCustomers: fetchCustomers,
       addTempEmployee,
+      clearTempEmployees,
     }));
 
     const handleEmployeeSelect = (employeeId: string) => {
