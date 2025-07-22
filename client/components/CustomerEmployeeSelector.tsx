@@ -20,6 +20,7 @@ interface CustomerEmployeeSelectorProps {
 
 export interface CustomerEmployeeSelectorRef {
   refreshCustomers: () => Promise<void>;
+  addTempEmployee: (employee: CustomerEmployee, customerName: string, customerId: string) => void;
 }
 
 export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, CustomerEmployeeSelectorProps>(
