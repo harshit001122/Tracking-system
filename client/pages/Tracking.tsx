@@ -91,9 +91,9 @@ export default function Tracking() {
     }
   };
 
-  const fetchMeetings = async () => {
+  const fetchMeetings = async (retryCount = 0) => {
     try {
-      console.log("Fetching meetings:", { employeeId });
+      console.log("Fetching meetings:", { employeeId, retryCount });
 
       const response = await HttpClient.get(
         `/api/meetings?employeeId=${employeeId}&limit=5`,
@@ -113,10 +113,21 @@ export default function Tracking() {
       }
     } catch (error) {
       console.error("Error fetching meetings:", error);
+
+      // Retry once if it's a network error and we haven't retried yet
+      if (retryCount < 1 && error instanceof TypeError && error.message.includes("fetch")) {
+        console.log("Retrying meetings fetch after network error...");
+        setTimeout(() => fetchMeetings(retryCount + 1), 2000);
+        return;
+      }
+
       // Don't crash the app - just set empty array and continue
       setMeetings([]);
     } finally {
-      setLoading(false);
+      // Only set loading to false if we're not retrying
+      if (retryCount >= 1 || !(error instanceof TypeError && error.message.includes("fetch"))) {
+        setLoading(false);
+      }
     }
   };
 
