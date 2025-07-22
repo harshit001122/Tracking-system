@@ -235,6 +235,11 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
           <Label htmlFor="customerEmployee" className="text-sm">
             Select Customer Employee
             <span className="text-destructive ml-1">*</span>
+            {tempEmployees.length > 0 && (
+              <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                +{tempEmployees.length} new
+              </span>
+            )}
           </Label>
           {onAddNewEmployee && (
             <Button
