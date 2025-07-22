@@ -22,20 +22,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Customer, CustomerEmployee } from "@shared/api";
-import { Check, ChevronDown, Loader2, User, Building2 } from "lucide-react";
+import { Check, ChevronDown, Loader2, User, Building2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CustomerEmployeeSelectorProps {
   onEmployeeSelect: (employee: CustomerEmployee, customer: Customer) => void;
   selectedEmployeeId?: string;
   disabled?: boolean;
+  onAddNewEmployee?: () => void;
 }
 
-export function CustomerEmployeeSelector({
-  onEmployeeSelect,
-  selectedEmployeeId,
-  disabled = false,
-}: CustomerEmployeeSelectorProps) {
+export interface CustomerEmployeeSelectorRef {
+  refreshCustomers: () => Promise<void>;
+}
+
+export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, CustomerEmployeeSelectorProps>((
+  {
+    onEmployeeSelect,
+    selectedEmployeeId,
+    disabled = false,
+    onAddNewEmployee,
+  },
+  ref
+) => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<
     Array<CustomerEmployee & { customerName: string; customerId: string }>
@@ -87,6 +96,11 @@ export function CustomerEmployeeSelector({
     fetchCustomers();
   }, []);
 
+  // Expose refresh function via ref
+  useImperativeHandle(ref, () => ({
+    refreshCustomers: fetchCustomers,
+  }));
+
   // Filter employees based on search
   const searchFilteredEmployees = filteredEmployees.filter((employee) =>
     employee.CustomerEmpName.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -129,10 +143,25 @@ export function CustomerEmployeeSelector({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="customerEmployee" className="text-sm">
-        Select Customer Employee
-        <span className="text-muted-foreground ml-1">(Optional)</span>
-      </Label>
+      <div className="flex items-center justify-between">
+        <Label htmlFor="customerEmployee" className="text-sm">
+          Select Customer Employee
+          <span className="text-muted-foreground ml-1">(Optional)</span>
+        </Label>
+        {onAddNewEmployee && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onAddNewEmployee}
+            disabled={disabled}
+            className="flex items-center space-x-1"
+          >
+            <Plus className="h-3 w-3" />
+            <span className="text-xs">Add New</span>
+          </Button>
+        )}
+      </div>
       
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -223,4 +252,4 @@ export function CustomerEmployeeSelector({
       )}
     </div>
   );
-}
+});
