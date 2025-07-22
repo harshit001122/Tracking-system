@@ -124,10 +124,8 @@ export default function Tracking() {
       // Don't crash the app - just set empty array and continue
       setMeetings([]);
     } finally {
-      // Only set loading to false if we're not retrying
-      if (retryCount >= 1 || !(error instanceof TypeError && error.message.includes("fetch"))) {
-        setLoading(false);
-      }
+      // Always set loading to false after the first attempt or any retry
+      setLoading(false);
     }
   };
 
