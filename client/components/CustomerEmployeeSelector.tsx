@@ -68,7 +68,7 @@ export function CustomerEmployeeSelector({
 
       // Flatten all employees with customer info
       const allEmployees = customerArray.flatMap((customer: Customer) =>
-        customer.Employees.map((employee) => ({
+        (customer.Employees || []).map((employee) => ({
           ...employee,
           customerName: customer.CustomerCompanyName,
           customerId: customer._id,
