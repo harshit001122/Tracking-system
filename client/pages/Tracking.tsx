@@ -60,9 +60,13 @@ export default function Tracking() {
         console.error(
           `Failed to fetch employee: ${response.status} ${response.statusText} - ${errorText}`,
         );
+        // Set some fallback data or show error state
+        setEmployee(null);
       }
     } catch (error) {
       console.error("Error fetching employee:", error);
+      // Don't crash the app - just log the error and continue
+      setEmployee(null);
     }
   };
 
