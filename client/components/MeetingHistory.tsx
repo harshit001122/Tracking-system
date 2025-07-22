@@ -91,6 +91,9 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
       }
     } catch (error) {
       console.error("Error fetching meeting history:", error);
+      setMeetings([]);
+      setTotal(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
