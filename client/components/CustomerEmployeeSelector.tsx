@@ -80,9 +80,20 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       fetchCustomers();
     }, []);
 
-    // Expose refresh function via ref
+    // Add temporary employee
+    const addTempEmployee = (employee: CustomerEmployee, customerName: string, customerId: string) => {
+      const tempEmployee = {
+        ...employee,
+        customerName,
+        customerId,
+      };
+      setTempEmployees(prev => [...prev, tempEmployee]);
+    };
+
+    // Expose refresh function and addTempEmployee via ref
     useImperativeHandle(ref, () => ({
       refreshCustomers: fetchCustomers,
+      addTempEmployee,
     }));
 
     const handleEmployeeSelect = (employeeId: string) => {
