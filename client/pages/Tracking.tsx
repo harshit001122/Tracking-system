@@ -8,7 +8,12 @@ import { StartMeetingModal } from "@/components/StartMeetingModal";
 import { EndMeetingModal } from "@/components/EndMeetingModal";
 import { MeetingHistory } from "@/components/MeetingHistory";
 import { HttpClient } from "@/lib/httpClient";
-import { Employee, MeetingLog, MeetingDetails, TrackingSession } from "@shared/api";
+import {
+  Employee,
+  MeetingLog,
+  MeetingDetails,
+  TrackingSession,
+} from "@shared/api";
 import {
   ArrowLeft,
   MapPin,
@@ -33,7 +38,8 @@ export default function Tracking() {
   const [isStartingMeeting, setIsStartingMeeting] = useState(false);
   const [isEndMeetingModalOpen, setIsEndMeetingModalOpen] = useState(false);
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null);
-  const [currentTrackingSession, setCurrentTrackingSession] = useState<TrackingSession | null>(null);
+  const [currentTrackingSession, setCurrentTrackingSession] =
+    useState<TrackingSession | null>(null);
   const [isMeetingHistoryOpen, setIsMeetingHistoryOpen] = useState(false);
 
   useEffect(() => {
@@ -45,10 +51,7 @@ export default function Tracking() {
     // Add small delay to ensure HttpClient is properly initialized
     const initializeData = async () => {
       try {
-        await Promise.all([
-          fetchEmployee(),
-          fetchMeetings()
-        ]);
+        await Promise.all([fetchEmployee(), fetchMeetings()]);
       } catch (error) {
         console.error("Failed to initialize tracking data:", error);
         // Continue anyway - the individual functions handle their own errors
@@ -80,7 +83,11 @@ export default function Tracking() {
       console.error("Error fetching employee:", error);
 
       // Retry once if it's a network error and we haven't retried yet
-      if (retryCount < 1 && error instanceof TypeError && error.message.includes("fetch")) {
+      if (
+        retryCount < 1 &&
+        error instanceof TypeError &&
+        error.message.includes("fetch")
+      ) {
         console.log("Retrying employee fetch after network error...");
         setTimeout(() => fetchEmployee(retryCount + 1), 2000);
         return;
@@ -115,7 +122,11 @@ export default function Tracking() {
       console.error("Error fetching meetings:", error);
 
       // Retry once if it's a network error and we haven't retried yet
-      if (retryCount < 1 && error instanceof TypeError && error.message.includes("fetch")) {
+      if (
+        retryCount < 1 &&
+        error instanceof TypeError &&
+        error.message.includes("fetch")
+      ) {
         console.log("Retrying meetings fetch after network error...");
         setTimeout(() => fetchMeetings(retryCount + 1), 2000);
         return;
@@ -181,30 +192,42 @@ export default function Tracking() {
     setIsEndMeetingModalOpen(true);
   };
 
-  const handleEndMeetingWithDetails = async (meetingDetails: MeetingDetails) => {
+  const handleEndMeetingWithDetails = async (
+    meetingDetails: MeetingDetails,
+  ) => {
     if (!activeMeetingId) return;
 
     setIsEndingMeeting(activeMeetingId);
     try {
-      console.log("Ending meeting with details:", activeMeetingId, meetingDetails);
+      console.log(
+        "Ending meeting with details:",
+        activeMeetingId,
+        meetingDetails,
+      );
 
       // End the meeting
-      const response = await HttpClient.put(`/api/meetings/${activeMeetingId}`, {
-        status: "completed",
-        endTime: new Date().toISOString(),
-        meetingDetails,
-      });
+      const response = await HttpClient.put(
+        `/api/meetings/${activeMeetingId}`,
+        {
+          status: "completed",
+          endTime: new Date().toISOString(),
+          meetingDetails,
+        },
+      );
 
       if (response.ok) {
         console.log("Meeting ended successfully");
 
         // Add to meeting history (always add, even without tracking session)
         try {
-          const historyResponse = await HttpClient.post("/api/meeting-history", {
-            sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
-            employeeId,
-            meetingDetails,
-          });
+          const historyResponse = await HttpClient.post(
+            "/api/meeting-history",
+            {
+              sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
+              employeeId,
+              meetingDetails,
+            },
+          );
 
           if (historyResponse.ok) {
             console.log("Meeting added to history successfully");
@@ -681,7 +704,9 @@ export default function Tracking() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleEndMeetingClick(meeting.id)}
+                                onClick={() =>
+                                  handleEndMeetingClick(meeting.id)
+                                }
                                 disabled={isEndingMeeting === meeting.id}
                               >
                                 {isEndingMeeting === meeting.id

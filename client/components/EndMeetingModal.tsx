@@ -12,8 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
 import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
-import { CustomerEmployeeSelector, CustomerEmployeeSelectorRef } from "./CustomerEmployeeSelector";
-import { AddCustomerEmployeeModal, NewCustomerEmployeeData } from "./AddCustomerEmployeeModal";
+import {
+  CustomerEmployeeSelector,
+  CustomerEmployeeSelectorRef,
+} from "./CustomerEmployeeSelector";
+import {
+  AddCustomerEmployeeModal,
+  NewCustomerEmployeeData,
+} from "./AddCustomerEmployeeModal";
 
 interface EndMeetingModalProps {
   isOpen: boolean;
@@ -44,8 +50,11 @@ export function EndMeetingModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Customer employee selection state
-  const [selectedCustomerEmployee, setSelectedCustomerEmployee] = useState<CustomerEmployee | null>(null);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomerEmployee, setSelectedCustomerEmployee] =
+    useState<CustomerEmployee | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
   const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
 
   // Ref for customer employee selector
@@ -65,12 +74,20 @@ export function EndMeetingModal({
     }
 
     // Email validation if provided
-    if (formData.customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) {
+    if (
+      formData.customerEmail &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)
+    ) {
       newErrors.customerEmail = "Please enter a valid email address";
     }
 
     // Mobile validation if provided
-    if (formData.customerMobile && !/^[\+]?[1-9][\d]{0,15}$/.test(formData.customerMobile.replace(/[\s\-\(\)]/g, ""))) {
+    if (
+      formData.customerMobile &&
+      !/^[\+]?[1-9][\d]{0,15}$/.test(
+        formData.customerMobile.replace(/[\s\-\(\)]/g, ""),
+      )
+    ) {
       newErrors.customerMobile = "Please enter a valid mobile number";
     }
 
@@ -79,14 +96,14 @@ export function EndMeetingModal({
   };
 
   const handleInputChange = (field: keyof MeetingDetails, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
 
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -95,12 +112,15 @@ export function EndMeetingModal({
   };
 
   // Handle customer employee selection
-  const handleCustomerEmployeeSelect = (employee: CustomerEmployee, customer: Customer) => {
+  const handleCustomerEmployeeSelect = (
+    employee: CustomerEmployee,
+    customer: Customer,
+  ) => {
     setSelectedCustomerEmployee(employee);
     setSelectedCustomer(customer);
 
     // Auto-fill form data from selected employee
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       customerName: customer.CustomerCompanyName,
       customerEmployeeName: employee.CustomerEmpName,
@@ -112,7 +132,9 @@ export function EndMeetingModal({
   };
 
   // Handle adding new customer employee
-  const handleAddNewEmployee = async (employeeData: NewCustomerEmployeeData) => {
+  const handleAddNewEmployee = async (
+    employeeData: NewCustomerEmployeeData,
+  ) => {
     try {
       // Create a new customer employee object with generated ID
       const newEmployeeId = `temp_${Date.now()}`;
@@ -137,7 +159,11 @@ export function EndMeetingModal({
         LedgerType: { _id: "", Name: "", __v: 0 },
         Dealer: { _id: "", Name: "", __v: 0 },
         Mode: { _id: "", Name: "", __v: 0 },
-        CompanyName: { _id: "", companyName: employeeData.customerName, __v: 0 },
+        CompanyName: {
+          _id: "",
+          companyName: employeeData.customerName,
+          __v: 0,
+        },
         Addresses: [],
         Gst: "",
         BusinessType: "",
@@ -172,7 +198,7 @@ export function EndMeetingModal({
       console.log("Generated customer object:", newCustomer);
 
       // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Add the new employee to the selector immediately
       if (customerSelectorRef.current) {
@@ -180,7 +206,7 @@ export function EndMeetingModal({
         customerSelectorRef.current.addTempEmployee(
           newEmployee,
           employeeData.customerName,
-          newCustomer._id
+          newCustomer._id,
         );
         console.log("Temp employee added to selector");
       } else {
@@ -200,8 +226,6 @@ export function EndMeetingModal({
       throw error;
     }
   };
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,7 +276,9 @@ export function EndMeetingModal({
             <span>End Meeting</span>
           </DialogTitle>
           <DialogDescription>
-            Complete the meeting for <span className="font-medium">{employeeName}</span> by providing customer details and discussion summary.
+            Complete the meeting for{" "}
+            <span className="font-medium">{employeeName}</span> by providing
+            customer details and discussion summary.
           </DialogDescription>
         </DialogHeader>
 
@@ -260,7 +286,9 @@ export function EndMeetingModal({
           {/* Customer Employee Selection Header */}
           <div className="flex items-center space-x-2 py-2 border-b">
             <User className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Select Customer Employee</span>
+            <span className="text-sm font-medium">
+              Select Customer Employee
+            </span>
           </div>
 
           {/* Customer Employee Selection */}
@@ -283,16 +311,22 @@ export function EndMeetingModal({
               <div className="p-4 border rounded-lg bg-muted/20">
                 <div className="flex items-center space-x-2 mb-3">
                   <Building2 className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm">Selected Customer Details</span>
+                  <span className="font-medium text-sm">
+                    Selected Customer Details
+                  </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <span className="text-muted-foreground">Company:</span>
-                    <div className="font-medium">{selectedCustomer?.CustomerCompanyName}</div>
+                    <div className="font-medium">
+                      {selectedCustomer?.CustomerCompanyName}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Employee:</span>
-                    <div className="font-medium">{selectedCustomerEmployee.CustomerEmpName}</div>
+                    <div className="font-medium">
+                      {selectedCustomerEmployee.CustomerEmpName}
+                    </div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Position:</span>

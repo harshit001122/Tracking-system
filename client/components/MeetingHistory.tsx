@@ -48,14 +48,19 @@ interface MeetingHistoryProps {
   onClose: () => void;
 }
 
-export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryProps) {
+export function MeetingHistory({
+  employeeId,
+  isOpen,
+  onClose,
+}: MeetingHistoryProps) {
   const [meetings, setMeetings] = useState<MeetingHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
-  const [selectedMeeting, setSelectedMeeting] = useState<MeetingHistoryEntry | null>(null);
+  const [selectedMeeting, setSelectedMeeting] =
+    useState<MeetingHistoryEntry | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
   const itemsPerPage = 10;
@@ -78,7 +83,9 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
         params.append("employeeId", employeeId);
       }
 
-      const response = await HttpClient.get(`/api/meeting-history?${params.toString()}`);
+      const response = await HttpClient.get(
+        `/api/meeting-history?${params.toString()}`,
+      );
 
       if (response.ok) {
         const data: MeetingHistoryResponse = await response.json();
@@ -87,7 +94,11 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
         setTotal(data.total);
         setTotalPages(data.totalPages);
       } else {
-        console.error("Failed to fetch meeting history:", response.status, response.statusText);
+        console.error(
+          "Failed to fetch meeting history:",
+          response.status,
+          response.statusText,
+        );
       }
     } catch (error) {
       console.error("Error fetching meeting history:", error);
@@ -101,10 +112,10 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
 
   const filteredMeetings = meetings.filter((meeting) => {
     if (!searchTerm) return true;
-    
+
     const searchLower = searchTerm.toLowerCase();
     const details = meeting.meetingDetails;
-    
+
     return (
       details.customerName?.toLowerCase().includes(searchLower) ||
       details.customerEmployeeName?.toLowerCase().includes(searchLower) ||
@@ -157,7 +168,8 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
               )}
             </DialogTitle>
             <DialogDescription>
-              View completed meetings with customer details and discussion notes.
+              View completed meetings with customer details and discussion
+              notes.
             </DialogDescription>
           </DialogHeader>
 
@@ -187,12 +199,17 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
                 </div>
               ) : filteredMeetings.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  {searchTerm ? "No meetings found matching your search." : "No meeting history available."}
+                  {searchTerm
+                    ? "No meetings found matching your search."
+                    : "No meeting history available."}
                 </div>
               ) : (
                 <div className="space-y-3">
                   {filteredMeetings.map((meeting) => (
-                    <Card key={meeting.id} className="border-l-4 border-l-primary">
+                    <Card
+                      key={meeting.id}
+                      className="border-l-4 border-l-primary"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1 space-y-2">
@@ -218,9 +235,15 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
                                 <User className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm">
                                   {meeting.meetingDetails.customerEmployeeName}
-                                  {meeting.meetingDetails.customerDesignation && (
+                                  {meeting.meetingDetails
+                                    .customerDesignation && (
                                     <span className="text-muted-foreground ml-1">
-                                      ({meeting.meetingDetails.customerDesignation})
+                                      (
+                                      {
+                                        meeting.meetingDetails
+                                          .customerDesignation
+                                      }
+                                      )
                                     </span>
                                   )}
                                 </span>
@@ -274,7 +297,9 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t pt-4">
                 <div className="text-sm text-muted-foreground">
-                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, total)} of {total} meetings
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                  {Math.min(currentPage * itemsPerPage, total)} of {total}{" "}
+                  meetings
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -319,48 +344,74 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
             <div className="space-y-4">
               {selectedMeeting.meetingDetails.customerName && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Customer Name</label>
-                  <p className="text-sm">{selectedMeeting.meetingDetails.customerName}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Customer Name
+                  </label>
+                  <p className="text-sm">
+                    {selectedMeeting.meetingDetails.customerName}
+                  </p>
                 </div>
               )}
 
               {selectedMeeting.meetingDetails.customerEmployeeName && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Contact Person</label>
-                  <p className="text-sm">{selectedMeeting.meetingDetails.customerEmployeeName}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Contact Person
+                  </label>
+                  <p className="text-sm">
+                    {selectedMeeting.meetingDetails.customerEmployeeName}
+                  </p>
                 </div>
               )}
 
               {selectedMeeting.meetingDetails.customerEmail && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Email</label>
-                  <p className="text-sm">{selectedMeeting.meetingDetails.customerEmail}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Email
+                  </label>
+                  <p className="text-sm">
+                    {selectedMeeting.meetingDetails.customerEmail}
+                  </p>
                 </div>
               )}
 
               {selectedMeeting.meetingDetails.customerMobile && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Mobile</label>
-                  <p className="text-sm">{selectedMeeting.meetingDetails.customerMobile}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Mobile
+                  </label>
+                  <p className="text-sm">
+                    {selectedMeeting.meetingDetails.customerMobile}
+                  </p>
                 </div>
               )}
 
               {selectedMeeting.meetingDetails.customerDesignation && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Designation</label>
-                  <p className="text-sm">{selectedMeeting.meetingDetails.customerDesignation}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Designation
+                  </label>
+                  <p className="text-sm">
+                    {selectedMeeting.meetingDetails.customerDesignation}
+                  </p>
                 </div>
               )}
 
               {selectedMeeting.meetingDetails.customerDepartment && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Department</label>
-                  <p className="text-sm">{selectedMeeting.meetingDetails.customerDepartment}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Department
+                  </label>
+                  <p className="text-sm">
+                    {selectedMeeting.meetingDetails.customerDepartment}
+                  </p>
                 </div>
               )}
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Discussion</label>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Discussion
+                </label>
                 <p className="text-sm bg-muted/50 p-3 rounded-md mt-1">
                   {selectedMeeting.meetingDetails.discussion}
                 </p>
@@ -368,7 +419,10 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
             </div>
 
             <div className="flex justify-end">
-              <Button variant="outline" onClick={() => setShowDetailModal(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowDetailModal(false)}
+              >
                 Close
               </Button>
             </div>

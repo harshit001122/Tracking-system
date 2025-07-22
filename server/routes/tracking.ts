@@ -29,7 +29,8 @@ let meetingHistory: Array<{
       customerMobile: "+1-555-0123",
       customerDesignation: "CTO",
       customerDepartment: "Technology",
-      discussion: "Discussed implementation of new cloud infrastructure. Client is interested in migrating their current setup to AWS. Next steps include providing a detailed proposal and cost estimate.",
+      discussion:
+        "Discussed implementation of new cloud infrastructure. Client is interested in migrating their current setup to AWS. Next steps include providing a detailed proposal and cost estimate.",
     },
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
   },
@@ -44,7 +45,8 @@ let meetingHistory: Array<{
       customerMobile: "+1-555-0456",
       customerDesignation: "Operations Manager",
       customerDepartment: "Operations",
-      discussion: "Reviewed quarterly performance metrics. Discussed optimization strategies for their supply chain. Client requested a follow-up meeting next week to present our recommendations.",
+      discussion:
+        "Reviewed quarterly performance metrics. Discussed optimization strategies for their supply chain. Client requested a follow-up meeting next week to present our recommendations.",
     },
     timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
   },
@@ -59,7 +61,8 @@ let meetingHistory: Array<{
       customerMobile: "+1-555-0789",
       customerDesignation: "Founder & CEO",
       customerDepartment: "Executive",
-      discussion: "Initial consultation for digital transformation project. Startup needs help modernizing their legacy systems. Very promising opportunity with potential for long-term partnership.",
+      discussion:
+        "Initial consultation for digital transformation project. Startup needs help modernizing their legacy systems. Very promising opportunity with potential for long-term partnership.",
     },
     timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
   },
@@ -95,8 +98,7 @@ export const getTrackingSessions: RequestHandler = (req, res) => {
 
     if (endDate) {
       filteredSessions = filteredSessions.filter(
-        (session) =>
-          new Date(session.startTime) <= new Date(endDate as string),
+        (session) => new Date(session.startTime) <= new Date(endDate as string),
       );
     }
 
@@ -160,15 +162,22 @@ export const updateTrackingSession: RequestHandler = (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const sessionIndex = trackingSessions.findIndex((session) => session.id === id);
+    const sessionIndex = trackingSessions.findIndex(
+      (session) => session.id === id,
+    );
     if (sessionIndex === -1) {
       return res.status(404).json({ error: "Tracking session not found" });
     }
 
     // If ending the session, set end time and calculate duration
-    if (updates.status === "completed" && !trackingSessions[sessionIndex].endTime) {
+    if (
+      updates.status === "completed" &&
+      !trackingSessions[sessionIndex].endTime
+    ) {
       updates.endTime = new Date().toISOString();
-      const startTime = new Date(trackingSessions[sessionIndex].startTime).getTime();
+      const startTime = new Date(
+        trackingSessions[sessionIndex].startTime,
+      ).getTime();
       const endTime = new Date(updates.endTime).getTime();
       updates.duration = Math.floor((endTime - startTime) / 1000); // Duration in seconds
     }
@@ -194,7 +203,9 @@ export const addLocationToRoute: RequestHandler = (req, res) => {
       return res.status(400).json({ error: "Location is required" });
     }
 
-    const sessionIndex = trackingSessions.findIndex((session) => session.id === id);
+    const sessionIndex = trackingSessions.findIndex(
+      (session) => session.id === id,
+    );
     if (sessionIndex === -1) {
       return res.status(404).json({ error: "Tracking session not found" });
     }
@@ -248,7 +259,9 @@ export const getTrackingSession: RequestHandler = (req, res) => {
 export const deleteTrackingSession: RequestHandler = (req, res) => {
   try {
     const { id } = req.params;
-    const sessionIndex = trackingSessions.findIndex((session) => session.id === id);
+    const sessionIndex = trackingSessions.findIndex(
+      (session) => session.id === id,
+    );
 
     if (sessionIndex === -1) {
       return res.status(404).json({ error: "Tracking session not found" });
@@ -277,7 +290,8 @@ export const getMeetingHistory: RequestHandler = (req, res) => {
 
     // Sort by timestamp (most recent first)
     filteredHistory.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
 
     // Pagination
@@ -336,17 +350,22 @@ export const addMeetingToHistory: RequestHandler = (req, res) => {
 };
 
 // Helper function to calculate distance between two points using Haversine formula
-function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+function calculateDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
   const R = 6371e3; // Earth's radius in meters
-  const φ1 = lat1 * Math.PI/180;
-  const φ2 = lat2 * Math.PI/180;
-  const Δφ = (lat2-lat1) * Math.PI/180;
-  const Δλ = (lng1-lng2) * Math.PI/180;
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng1 - lng2) * Math.PI) / 180;
 
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c; // Distance in meters
 }

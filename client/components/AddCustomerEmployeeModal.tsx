@@ -24,7 +24,9 @@ interface NewCustomerEmployeeData {
 interface AddCustomerEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddEmployee: (employeeData: NewCustomerEmployeeData) => Promise<{ employee: CustomerEmployee; customer: Customer } | null>;
+  onAddEmployee: (
+    employeeData: NewCustomerEmployeeData,
+  ) => Promise<{ employee: CustomerEmployee; customer: Customer } | null>;
   isLoading?: boolean;
 }
 
@@ -72,7 +74,10 @@ export function AddCustomerEmployeeModal({
     }
 
     // Mobile validation if provided
-    if (formData.mobile && !/^[\+]?[1-9][\d]{0,15}$/.test(formData.mobile.replace(/[\s\-\(\)]/g, ""))) {
+    if (
+      formData.mobile &&
+      !/^[\+]?[1-9][\d]{0,15}$/.test(formData.mobile.replace(/[\s\-\(\)]/g, ""))
+    ) {
       newErrors.mobile = "Please enter a valid mobile number";
     }
 
@@ -80,15 +85,18 @@ export function AddCustomerEmployeeModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof NewCustomerEmployeeData, value: string) => {
-    setFormData(prev => ({
+  const handleInputChange = (
+    field: keyof NewCustomerEmployeeData,
+    value: string,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
 
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -117,7 +125,7 @@ export function AddCustomerEmployeeModal({
 
   const handleClose = () => {
     if (isSubmitting || isLoading) return;
-    
+
     setFormData({
       customerName: "",
       customerEmployeeName: "",
@@ -141,7 +149,8 @@ export function AddCustomerEmployeeModal({
             <span>Add New Customer Employee</span>
           </DialogTitle>
           <DialogDescription>
-            Create a new customer employee record. All fields marked with * are required.
+            Create a new customer employee record. All fields marked with * are
+            required.
           </DialogDescription>
         </DialogHeader>
 
@@ -157,7 +166,9 @@ export function AddCustomerEmployeeModal({
               type="text"
               placeholder="Enter company/customer name"
               value={formData.customerName}
-              onChange={(e) => handleInputChange("customerName", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("customerName", e.target.value)
+              }
               disabled={isFormDisabled}
               className={errors.customerName ? "border-destructive" : ""}
             />
@@ -180,9 +191,13 @@ export function AddCustomerEmployeeModal({
               type="text"
               placeholder="Enter employee full name"
               value={formData.customerEmployeeName}
-              onChange={(e) => handleInputChange("customerEmployeeName", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("customerEmployeeName", e.target.value)
+              }
               disabled={isFormDisabled}
-              className={errors.customerEmployeeName ? "border-destructive" : ""}
+              className={
+                errors.customerEmployeeName ? "border-destructive" : ""
+              }
             />
             {errors.customerEmployeeName && (
               <div className="flex items-center space-x-1 text-sm text-destructive">

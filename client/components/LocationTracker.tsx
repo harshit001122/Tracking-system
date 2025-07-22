@@ -42,7 +42,9 @@ export function LocationTracker({
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
 
   // Enhanced tracking state
-  const [currentSession, setCurrentSession] = useState<TrackingSession | null>(null);
+  const [currentSession, setCurrentSession] = useState<TrackingSession | null>(
+    null,
+  );
   const [trackingStartTime, setTrackingStartTime] = useState<Date | null>(null);
   const [trackingEndTime, setTrackingEndTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -59,20 +61,23 @@ export function LocationTracker({
     });
 
   // Calculate distance between two points using Haversine formula
-  const calculateDistance = useCallback((lat1: number, lng1: number, lat2: number, lng2: number): number => {
-    const R = 6371e3; // Earth's radius in meters
-    const φ1 = lat1 * Math.PI/180;
-    const φ2 = lat2 * Math.PI/180;
-    const Δφ = (lat2-lat1) * Math.PI/180;
-    const Δλ = (lng1-lng2) * Math.PI/180;
+  const calculateDistance = useCallback(
+    (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+      const R = 6371e3; // Earth's radius in meters
+      const φ1 = (lat1 * Math.PI) / 180;
+      const φ2 = (lat2 * Math.PI) / 180;
+      const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+      const Δλ = ((lng1 - lng2) * Math.PI) / 180;
 
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // Distance in meters
-  }, []);
+      return R * c; // Distance in meters
+    },
+    [],
+  );
 
   // Timer effect
   useEffect(() => {
@@ -112,7 +117,7 @@ export function LocationTracker({
           timestamp: new Date().toISOString(),
         };
 
-        setRouteCoordinates(prevRoute => {
+        setRouteCoordinates((prevRoute) => {
           const newRoute = [...prevRoute, newLocation];
 
           // Calculate distance if we have a previous point
@@ -122,9 +127,9 @@ export function LocationTracker({
               lastPoint.lat,
               lastPoint.lng,
               latitude,
-              longitude
+              longitude,
             );
-            setTotalDistance(prev => prev + distance);
+            setTotalDistance((prev) => prev + distance);
           }
 
           return newRoute;
@@ -189,9 +194,16 @@ export function LocationTracker({
       console.error("Error updating location:", error);
 
       // Retry once if it's a network error and we haven't retried yet
-      if (retryCount < 1 && error instanceof TypeError && error.message.includes("fetch")) {
+      if (
+        retryCount < 1 &&
+        error instanceof TypeError &&
+        error.message.includes("fetch")
+      ) {
         console.log("Retrying location update after network error...");
-        setTimeout(() => updateLocationOnServer(lat, lng, acc, retryCount + 1), 3000);
+        setTimeout(
+          () => updateLocationOnServer(lat, lng, acc, retryCount + 1),
+          3000,
+        );
         return;
       }
 
@@ -375,7 +387,9 @@ export function LocationTracker({
                 <span className="font-medium">Last Session</span>
               </div>
               <div className="text-sm font-mono text-success">
-                {formatDuration(trackingEndTime.getTime() - trackingStartTime.getTime())}
+                {formatDuration(
+                  trackingEndTime.getTime() - trackingStartTime.getTime(),
+                )}
               </div>
             </div>
 
@@ -409,9 +423,7 @@ export function LocationTracker({
                   <Route className="h-3 w-3 mr-1" />
                   Points
                 </div>
-                <div className="font-medium">
-                  {routeCoordinates.length}
-                </div>
+                <div className="font-medium">{routeCoordinates.length}</div>
               </div>
             </div>
           </div>

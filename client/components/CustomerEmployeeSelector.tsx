@@ -20,11 +20,18 @@ interface CustomerEmployeeSelectorProps {
 
 export interface CustomerEmployeeSelectorRef {
   refreshCustomers: () => Promise<void>;
-  addTempEmployee: (employee: CustomerEmployee, customerName: string, customerId: string) => void;
+  addTempEmployee: (
+    employee: CustomerEmployee,
+    customerName: string,
+    customerId: string,
+  ) => void;
   clearTempEmployees: () => void;
 }
 
-export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, CustomerEmployeeSelectorProps>(
+export const CustomerEmployeeSelector = forwardRef<
+  CustomerEmployeeSelectorRef,
+  CustomerEmployeeSelectorProps
+>(
   (
     {
       onEmployeeSelect,
@@ -32,7 +39,7 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       disabled = false,
       onAddNewEmployee,
     },
-    ref
+    ref,
   ) => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [employees, setEmployees] = useState<
@@ -43,12 +50,12 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
     >(() => {
       // Load temporary employees from localStorage on initialization
       try {
-        const stored = localStorage.getItem('tempCustomerEmployees');
+        const stored = localStorage.getItem("tempCustomerEmployees");
         const loaded = stored ? JSON.parse(stored) : [];
-        console.log('Loading temporary employees from localStorage:', loaded);
+        console.log("Loading temporary employees from localStorage:", loaded);
         return loaded;
       } catch (error) {
-        console.error('Error loading temporary employees:', error);
+        console.error("Error loading temporary employees:", error);
         return [];
       }
     });
@@ -61,13 +68,13 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       setError(null);
       try {
         const response = await fetch(
-          "https://jbdspower.in/LeafNetServer/api/customer"
+          "https://jbdspower.in/LeafNetServer/api/customer",
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch customers: ${response.statusText}`);
         }
         const data = await response.json();
-        
+
         // The API returns an array directly
         const customerArray = Array.isArray(data) ? data : [];
         setCustomers(customerArray);
@@ -78,36 +85,45 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
             ...employee,
             customerName: customer.CustomerCompanyName,
             customerId: customer._id,
-          }))
+          })),
         );
         setEmployees(allEmployees);
       } catch (err) {
         console.error("Error fetching customers:", err);
-        setError(err instanceof Error ? err.message : "Failed to fetch customers");
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch customers",
+        );
       } finally {
         setLoading(false);
       }
     };
 
     // Add temporary employee - declared before useEffect that uses it
-    const addTempEmployee = (employee: CustomerEmployee, customerName: string, customerId: string) => {
+    const addTempEmployee = (
+      employee: CustomerEmployee,
+      customerName: string,
+      customerId: string,
+    ) => {
       const tempEmployee = {
         ...employee,
         customerName,
         customerId,
       };
 
-      console.log('Adding temporary employee:', tempEmployee);
+      console.log("Adding temporary employee:", tempEmployee);
 
-      setTempEmployees(prev => {
+      setTempEmployees((prev) => {
         const updated = [...prev, tempEmployee];
         // Persist to localStorage
         try {
-          localStorage.setItem('tempCustomerEmployees', JSON.stringify(updated));
+          localStorage.setItem(
+            "tempCustomerEmployees",
+            JSON.stringify(updated),
+          );
         } catch (error) {
-          console.error('Error saving temporary employees:', error);
+          console.error("Error saving temporary employees:", error);
         }
-        console.log('Updated temp employees:', updated);
+        console.log("Updated temp employees:", updated);
         return updated;
       });
     };
@@ -118,26 +134,30 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
 
     // Debug effect for tempEmployees changes
     useEffect(() => {
-      console.log('tempEmployees changed:', tempEmployees);
+      console.log("tempEmployees changed:", tempEmployees);
     }, [tempEmployees]);
 
     // Debug: expose functions to window for testing
     useEffect(() => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         (window as any).debugCustomerSelector = {
           getTempEmployees: () => tempEmployees,
           getEmployees: () => employees,
           addTestEmployee: () => {
             const testEmployee: CustomerEmployee = {
               _id: `temp_test_${Date.now()}`,
-              CustomerEmpName: 'Test Employee',
-              Designation: 'Test Position',
-              Department: 'Test Dept',
-              Mobile: '1234567890',
-              Email: 'test@test.com',
+              CustomerEmpName: "Test Employee",
+              Designation: "Test Position",
+              Department: "Test Dept",
+              Mobile: "1234567890",
+              Email: "test@test.com",
             };
-            addTempEmployee(testEmployee, 'Test Company', `temp_customer_${Date.now()}`);
-          }
+            addTempEmployee(
+              testEmployee,
+              "Test Company",
+              `temp_customer_${Date.now()}`,
+            );
+          },
         };
       }
     }, [tempEmployees, employees, addTempEmployee]);
@@ -146,9 +166,9 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
     const clearTempEmployees = () => {
       setTempEmployees([]);
       try {
-        localStorage.removeItem('tempCustomerEmployees');
+        localStorage.removeItem("tempCustomerEmployees");
       } catch (error) {
-        console.error('Error clearing temporary employees:', error);
+        console.error("Error clearing temporary employees:", error);
       }
     };
 
@@ -166,7 +186,7 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
 
       if (employee) {
         // For temp employees, create a temporary customer object
-        if (employee._id.startsWith('temp_')) {
+        if (employee._id.startsWith("temp_")) {
           const tempCustomer: Customer = {
             _id: employee.customerId,
             CustomerCompanyName: employee.customerName,
@@ -178,7 +198,11 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
             LedgerType: { _id: "", Name: "", __v: 0 },
             Dealer: { _id: "", Name: "", __v: 0 },
             Mode: { _id: "", Name: "", __v: 0 },
-            CompanyName: { _id: "", companyName: employee.customerName, __v: 0 },
+            CompanyName: {
+              _id: "",
+              companyName: employee.customerName,
+              __v: 0,
+            },
             Addresses: [],
             Gst: "",
             BusinessType: "",
@@ -222,7 +246,9 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       return (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-sm text-destructive">Customer Employee</Label>
+            <Label className="text-sm text-destructive">
+              Customer Employee
+            </Label>
             {onAddNewEmployee && (
               <Button
                 type="button"
@@ -283,14 +309,14 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
             </Button>
           )}
         </div>
-        
+
         <Select
           onValueChange={handleEmployeeSelect}
           value={selectedEmployeeId || ""}
           disabled={disabled || loading}
         >
           <SelectTrigger className="w-full">
-            <SelectValue 
+            <SelectValue
               placeholder={
                 loading ? (
                   <div className="flex items-center space-x-2">
@@ -306,7 +332,12 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
           <SelectContent>
             {(() => {
               const totalEmployees = employees.length + tempEmployees.length;
-              console.log('Rendering dropdown - Regular employees:', employees.length, 'Temp employees:', tempEmployees.length);
+              console.log(
+                "Rendering dropdown - Regular employees:",
+                employees.length,
+                "Temp employees:",
+                tempEmployees.length,
+              );
 
               if (totalEmployees === 0) {
                 return (
@@ -337,7 +368,7 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
         </Select>
       </div>
     );
-  }
+  },
 );
 
 CustomerEmployeeSelector.displayName = "CustomerEmployeeSelector";
