@@ -145,3 +145,99 @@ export interface UpdateLocationRequest {
   lng: number;
   accuracy?: number;
 }
+
+// Customer employee interfaces from external API
+export interface CustomerAddress {
+  _id: string;
+  StreetAddress: string;
+  City: string;
+  State: string;
+  PinCode: string;
+  Country: string;
+}
+
+export interface CustomerEmployee {
+  _id: string;
+  CustomerEmpName: string;
+  Designation: string;
+  Department: string;
+  Mobile: string;
+  Email: string;
+}
+
+export interface LedgerType {
+  _id: string;
+  Name: string;
+  __v: number;
+}
+
+export interface Dealer {
+  _id: string;
+  Name: string;
+  __v: number;
+}
+
+export interface Mode {
+  _id: string;
+  Name: string;
+  __v: number;
+}
+
+export interface CompanyName {
+  _id: string;
+  companyName: string;
+  __v: number;
+}
+
+export interface BankDetails {
+  AccountholderName: string;
+  AccountNumber: string;
+  IFSC: string;
+  BankName: string;
+  BranchName: string;
+  AccountType: string;
+}
+
+export interface Customer {
+  _id: string;
+  GstNumber: string;
+  Status: string;
+  CustomerCompanyName: string;
+  RJBDSName: string;
+  LedgerType: LedgerType;
+  Dealer: Dealer;
+  Mode: Mode;
+  CompanyName: CompanyName;
+  Addresses: CustomerAddress[];
+  Employees: CustomerEmployee[];
+  Gst: string;
+  BusinessType: string;
+  AdharNumber: string;
+  PanNumber: string;
+  ImportExportCode: string;
+  WhatsappNumber: string;
+  OpBalance: number;
+  BankDetails: BankDetails;
+  UploadGSTCertificate: string | null;
+  UploadAdharCardFront: string | null;
+  UploadAdharCardBack: string | null;
+  UploadPanCard: string | null;
+  CancelledCheque: string | null;
+  DistributorAuthorizedCertificate: string | null;
+  UploadImportExportCertificate: string | null;
+  CustomerId: string;
+  CustomerStatus: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface CustomerApiResponse {
+  customers: Customer[];
+}
+
+// Enhanced meeting details with customer employee selection
+export interface EnhancedMeetingDetails extends MeetingDetails {
+  selectedCustomerId?: string;
+  selectedCustomerEmployeeId?: string;
+  selectedCustomerEmployee?: CustomerEmployee;
+}

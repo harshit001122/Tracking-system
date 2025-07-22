@@ -55,10 +55,10 @@ export class HttpClient {
 
       if (hasFullStory) {
         console.warn(
-          "FullStory detected - will switch to XMLHttpRequest mode on fetch failures",
+          "FullStory detected - switching to XMLHttpRequest mode immediately",
         );
-        // Don't immediately force XHR mode, let fetch fail first then switch
-        // this.useXHROnly = true;
+        // Force XHR mode immediately when FullStory is detected
+        this.useXHROnly = true;
         return;
       }
 
@@ -72,10 +72,10 @@ export class HttpClient {
         originalFetch.includes("proxy")
       ) {
         console.warn(
-          "Fetch interception detected - will switch to XMLHttpRequest mode on failures",
+          "Fetch interception detected - switching to XMLHttpRequest mode immediately",
         );
-        // Don't immediately force XHR mode
-        // this.useXHROnly = true;
+        // Force XHR mode immediately when interception is detected
+        this.useXHROnly = true;
         return;
       }
 

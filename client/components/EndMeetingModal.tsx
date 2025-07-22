@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,8 +10,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MeetingDetails } from "@shared/api";
-import { AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
+import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
+import {
+  CustomerEmployeeSelector,
+  CustomerEmployeeSelectorRef,
+} from "./CustomerEmployeeSelector";
+import {
+  AddCustomerEmployeeModal,
+  NewCustomerEmployeeData,
+} from "./AddCustomerEmployeeModal";
 
 interface EndMeetingModalProps {
   isOpen: boolean;
@@ -41,8 +49,24 @@ export function EndMeetingModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Customer employee selection state
+  const [selectedCustomerEmployee, setSelectedCustomerEmployee] =
+    useState<CustomerEmployee | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
+  const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
+
+  // Ref for customer employee selector
+  const customerSelectorRef = useRef<CustomerEmployeeSelectorRef>(null);
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+
+    // Customer employee selection is mandatory
+    if (!selectedCustomerEmployee) {
+      newErrors.customerEmployee = "Please select a customer employee";
+    }
 
     // Discussion is mandatory
     if (!formData.discussion.trim()) {
@@ -50,12 +74,20 @@ export function EndMeetingModal({
     }
 
     // Email validation if provided
-    if (formData.customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) {
+    if (
+      formData.customerEmail &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)
+    ) {
       newErrors.customerEmail = "Please enter a valid email address";
     }
 
     // Mobile validation if provided
-    if (formData.customerMobile && !/^[\+]?[1-9][\d]{0,15}$/.test(formData.customerMobile.replace(/[\s\-\(\)]/g, ""))) {
+    if (
+      formData.customerMobile &&
+      !/^[\+]?[1-9][\d]{0,15}$/.test(
+        formData.customerMobile.replace(/[\s\-\(\)]/g, ""),
+      )
+    ) {
       newErrors.customerMobile = "Please enter a valid mobile number";
     }
 
@@ -64,18 +96,134 @@ export function EndMeetingModal({
   };
 
   const handleInputChange = (field: keyof MeetingDetails, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
 
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
       });
+    }
+  };
+
+  // Handle customer employee selection
+  const handleCustomerEmployeeSelect = (
+    employee: CustomerEmployee,
+    customer: Customer,
+  ) => {
+    setSelectedCustomerEmployee(employee);
+    setSelectedCustomer(customer);
+
+    // Auto-fill form data from selected employee
+    setFormData((prev) => ({
+      ...prev,
+      customerName: customer.CustomerCompanyName,
+      customerEmployeeName: employee.CustomerEmpName,
+      customerEmail: employee.Email,
+      customerMobile: employee.Mobile,
+      customerDesignation: employee.Designation,
+      customerDepartment: employee.Department,
+    }));
+  };
+
+  // Handle adding new customer employee
+  const handleAddNewEmployee = async (
+    employeeData: NewCustomerEmployeeData,
+  ) => {
+    try {
+      // Create a new customer employee object with generated ID
+      const newEmployeeId = `temp_${Date.now()}`;
+      const newEmployee: CustomerEmployee = {
+        _id: newEmployeeId,
+        CustomerEmpName: employeeData.customerEmployeeName,
+        Designation: employeeData.designation,
+        Department: employeeData.department,
+        Mobile: employeeData.mobile,
+        Email: employeeData.email,
+      };
+
+      // Create a temporary customer object if it's a new company
+      const newCustomer: Customer = {
+        _id: `temp_customer_${Date.now()}`,
+        CustomerCompanyName: employeeData.customerName,
+        Employees: [newEmployee],
+        // Fill in other required fields with defaults
+        GstNumber: "",
+        Status: "Active",
+        RJBDSName: "",
+        LedgerType: { _id: "", Name: "", __v: 0 },
+        Dealer: { _id: "", Name: "", __v: 0 },
+        Mode: { _id: "", Name: "", __v: 0 },
+        CompanyName: {
+          _id: "",
+          companyName: employeeData.customerName,
+          __v: 0,
+        },
+        Addresses: [],
+        Gst: "",
+        BusinessType: "",
+        AdharNumber: "",
+        PanNumber: "",
+        ImportExportCode: "",
+        WhatsappNumber: "",
+        OpBalance: 0,
+        BankDetails: {
+          AccountholderName: "",
+          AccountNumber: "",
+          IFSC: "",
+          BankName: "",
+          BranchName: "",
+          AccountType: "",
+        },
+        UploadGSTCertificate: null,
+        UploadAdharCardFront: null,
+        UploadAdharCardBack: null,
+        UploadPanCard: null,
+        CancelledCheque: null,
+        DistributorAuthorizedCertificate: null,
+        UploadImportExportCertificate: null,
+        CustomerId: "",
+        CustomerStatus: "Temporary",
+        updatedAt: new Date().toISOString(),
+        __v: 0,
+      };
+
+      console.log("Creating new customer employee:", employeeData);
+      console.log("Generated employee object:", newEmployee);
+      console.log("Generated customer object:", newCustomer);
+
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Add the new employee to the selector immediately
+      if (customerSelectorRef.current) {
+        console.log("Adding temp employee to selector...");
+        customerSelectorRef.current.addTempEmployee(
+          newEmployee,
+          employeeData.customerName,
+          newCustomer._id,
+        );
+        console.log("Temp employee added to selector");
+      } else {
+        console.error("customerSelectorRef.current is null!");
+      }
+
+      // Automatically select the newly created employee
+      setTimeout(() => {
+        console.log("Auto-selecting newly created employee...");
+        handleCustomerEmployeeSelect(newEmployee, newCustomer);
+      }, 100);
+
+      console.log("Customer employee added successfully!");
+      return { employee: newEmployee, customer: newCustomer };
+    } catch (error) {
+      console.error("Error adding customer employee:", error);
+      throw error;
     }
   };
 
@@ -100,7 +248,7 @@ export function EndMeetingModal({
 
   const handleClose = () => {
     if (isSubmitting || isLoading) return;
-    
+
     setFormData({
       customerName: "",
       customerEmployeeName: "",
@@ -111,6 +259,9 @@ export function EndMeetingModal({
       discussion: "",
     });
     setErrors({});
+    setSelectedCustomerEmployee(null);
+    setSelectedCustomer(null);
+    setIsAddEmployeeOpen(false);
     onClose();
   };
 
@@ -125,117 +276,81 @@ export function EndMeetingModal({
             <span>End Meeting</span>
           </DialogTitle>
           <DialogDescription>
-            Complete the meeting for <span className="font-medium">{employeeName}</span> by providing customer details and discussion summary.
+            Complete the meeting for{" "}
+            <span className="font-medium">{employeeName}</span> by providing
+            customer details and discussion summary.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Customer Name */}
-          <div className="space-y-2">
-            <Label htmlFor="customerName" className="text-sm">
-              Customer Name
-              <span className="text-muted-foreground ml-1">(Optional)</span>
-            </Label>
-            <Input
-              id="customerName"
-              type="text"
-              placeholder="Enter customer name"
-              value={formData.customerName || ""}
-              onChange={(e) => handleInputChange("customerName", e.target.value)}
-              disabled={isFormDisabled}
-            />
+          {/* Customer Employee Selection Header */}
+          <div className="flex items-center space-x-2 py-2 border-b">
+            <User className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">
+              Select Customer Employee
+            </span>
           </div>
 
-          {/* Customer Employee Name */}
-          <div className="space-y-2">
-            <Label htmlFor="customerEmployeeName" className="text-sm">
-              Customer Employee Name
-              <span className="text-muted-foreground ml-1">(Optional)</span>
-            </Label>
-            <Input
-              id="customerEmployeeName"
-              type="text"
-              placeholder="Enter employee name you met"
-              value={formData.customerEmployeeName || ""}
-              onChange={(e) => handleInputChange("customerEmployeeName", e.target.value)}
+          {/* Customer Employee Selection */}
+          <div className="space-y-4">
+            <CustomerEmployeeSelector
+              ref={customerSelectorRef}
+              onEmployeeSelect={handleCustomerEmployeeSelect}
+              selectedEmployeeId={selectedCustomerEmployee?._id}
               disabled={isFormDisabled}
+              onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
-          </div>
-
-          {/* Customer Email */}
-          <div className="space-y-2">
-            <Label htmlFor="customerEmail" className="text-sm">
-              Customer Email
-              <span className="text-muted-foreground ml-1">(Optional)</span>
-            </Label>
-            <Input
-              id="customerEmail"
-              type="email"
-              placeholder="customer@example.com"
-              value={formData.customerEmail || ""}
-              onChange={(e) => handleInputChange("customerEmail", e.target.value)}
-              disabled={isFormDisabled}
-            />
-            {errors.customerEmail && (
+            {errors.customerEmployee && (
               <div className="flex items-center space-x-1 text-sm text-destructive">
                 <AlertCircle className="h-3 w-3" />
-                <span>{errors.customerEmail}</span>
+                <span>{errors.customerEmployee}</span>
               </div>
             )}
-          </div>
 
-          {/* Customer Mobile */}
-          <div className="space-y-2">
-            <Label htmlFor="customerMobile" className="text-sm">
-              Customer Mobile
-              <span className="text-muted-foreground ml-1">(Optional)</span>
-            </Label>
-            <Input
-              id="customerMobile"
-              type="tel"
-              placeholder="+1 (555) 123-4567"
-              value={formData.customerMobile || ""}
-              onChange={(e) => handleInputChange("customerMobile", e.target.value)}
-              disabled={isFormDisabled}
-            />
-            {errors.customerMobile && (
-              <div className="flex items-center space-x-1 text-sm text-destructive">
-                <AlertCircle className="h-3 w-3" />
-                <span>{errors.customerMobile}</span>
+            {selectedCustomerEmployee && (
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">
+                    Selected Customer Details
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Company:</span>
+                    <div className="font-medium">
+                      {selectedCustomer?.CustomerCompanyName}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Employee:</span>
+                    <div className="font-medium">
+                      {selectedCustomerEmployee.CustomerEmpName}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Position:</span>
+                    <div>{selectedCustomerEmployee.Designation}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Department:</span>
+                    <div>{selectedCustomerEmployee.Department}</div>
+                  </div>
+                  {selectedCustomerEmployee.Email && (
+                    <div>
+                      <span className="text-muted-foreground">Email:</span>
+                      <div>{selectedCustomerEmployee.Email}</div>
+                    </div>
+                  )}
+                  {selectedCustomerEmployee.Mobile && (
+                    <div>
+                      <span className="text-muted-foreground">Mobile:</span>
+                      <div>{selectedCustomerEmployee.Mobile}</div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
-          </div>
-
-          {/* Customer Designation */}
-          <div className="space-y-2">
-            <Label htmlFor="customerDesignation" className="text-sm">
-              Customer Designation
-              <span className="text-muted-foreground ml-1">(Optional)</span>
-            </Label>
-            <Input
-              id="customerDesignation"
-              type="text"
-              placeholder="e.g., Manager, Director, CEO"
-              value={formData.customerDesignation || ""}
-              onChange={(e) => handleInputChange("customerDesignation", e.target.value)}
-              disabled={isFormDisabled}
-            />
-          </div>
-
-          {/* Customer Department */}
-          <div className="space-y-2">
-            <Label htmlFor="customerDepartment" className="text-sm">
-              Customer Department
-              <span className="text-muted-foreground ml-1">(Optional)</span>
-            </Label>
-            <Input
-              id="customerDepartment"
-              type="text"
-              placeholder="e.g., Sales, IT, HR, Operations"
-              value={formData.customerDepartment || ""}
-              onChange={(e) => handleInputChange("customerDepartment", e.target.value)}
-              disabled={isFormDisabled}
-            />
           </div>
 
           {/* Discussion - Mandatory */}
@@ -294,6 +409,14 @@ export function EndMeetingModal({
             </Button>
           </div>
         </form>
+
+        {/* Add Customer Employee Modal */}
+        <AddCustomerEmployeeModal
+          isOpen={isAddEmployeeOpen}
+          onClose={() => setIsAddEmployeeOpen(false)}
+          onAddEmployee={handleAddNewEmployee}
+          isLoading={isLoading}
+        />
       </DialogContent>
     </Dialog>
   );
