@@ -98,6 +98,27 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       console.log('tempEmployees changed:', tempEmployees);
     }, [tempEmployees]);
 
+    // Debug: expose functions to window for testing
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        (window as any).debugCustomerSelector = {
+          getTempEmployees: () => tempEmployees,
+          getEmployees: () => employees,
+          addTestEmployee: () => {
+            const testEmployee: CustomerEmployee = {
+              _id: `temp_test_${Date.now()}`,
+              CustomerEmpName: 'Test Employee',
+              Designation: 'Test Position',
+              Department: 'Test Dept',
+              Mobile: '1234567890',
+              Email: 'test@test.com',
+            };
+            addTempEmployee(testEmployee, 'Test Company', `temp_customer_${Date.now()}`);
+          }
+        };
+      }
+    }, [tempEmployees, employees, addTempEmployee]);
+
     // Add temporary employee
     const addTempEmployee = (employee: CustomerEmployee, customerName: string, customerId: string) => {
       const tempEmployee = {
