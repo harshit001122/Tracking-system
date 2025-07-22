@@ -41,8 +41,21 @@ export default function Tracking() {
       navigate("/");
       return;
     }
-    fetchEmployee();
-    fetchMeetings();
+
+    // Add small delay to ensure HttpClient is properly initialized
+    const initializeData = async () => {
+      try {
+        await Promise.all([
+          fetchEmployee(),
+          fetchMeetings()
+        ]);
+      } catch (error) {
+        console.error("Failed to initialize tracking data:", error);
+        // Continue anyway - the individual functions handle their own errors
+      }
+    };
+
+    initializeData();
   }, [employeeId, navigate]);
 
   const fetchEmployee = async () => {
