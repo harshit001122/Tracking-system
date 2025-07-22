@@ -154,6 +154,7 @@ export function LocationTracker({
     lat: number,
     lng: number,
     acc: number,
+    retryCount: number = 0,
   ) => {
     try {
       console.log("Attempting to update location:", {
@@ -161,6 +162,7 @@ export function LocationTracker({
         lat,
         lng,
         accuracy: acc,
+        retryCount,
       });
 
       const response = await HttpClient.put(
@@ -185,6 +187,14 @@ export function LocationTracker({
       setFailureCount(0);
     } catch (error) {
       console.error("Error updating location:", error);
+
+      // Retry once if it's a network error and we haven't retried yet
+      if (retryCount < 1 && error instanceof TypeError && error.message.includes("fetch")) {
+        console.log("Retrying location update after network error...");
+        setTimeout(() => updateLocationOnServer(lat, lng, acc, retryCount + 1), 3000);
+        return;
+      }
+
       setUpdateError(error instanceof Error ? error.message : "Unknown error");
       setFailureCount((prev) => prev + 1);
 
