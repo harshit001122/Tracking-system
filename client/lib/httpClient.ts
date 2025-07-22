@@ -72,10 +72,10 @@ export class HttpClient {
         originalFetch.includes("proxy")
       ) {
         console.warn(
-          "Fetch interception detected - will switch to XMLHttpRequest mode on failures",
+          "Fetch interception detected - switching to XMLHttpRequest mode immediately",
         );
-        // Don't immediately force XHR mode
-        // this.useXHROnly = true;
+        // Force XHR mode immediately when interception is detected
+        this.useXHROnly = true;
         return;
       }
 
