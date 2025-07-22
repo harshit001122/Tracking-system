@@ -54,6 +54,11 @@ export function EndMeetingModal({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
+    // Customer employee selection is mandatory
+    if (!selectedCustomerEmployee) {
+      newErrors.customerEmployee = "Please select a customer employee";
+    }
+
     // Discussion is mandatory
     if (!formData.discussion.trim()) {
       newErrors.discussion = "Discussion details are required";
