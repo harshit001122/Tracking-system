@@ -36,6 +36,9 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
     const [employees, setEmployees] = useState<
       Array<CustomerEmployee & { customerName: string; customerId: string }>
     >([]);
+    const [tempEmployees, setTempEmployees] = useState<
+      Array<CustomerEmployee & { customerName: string; customerId: string }>
+    >([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
