@@ -58,9 +58,9 @@ export default function Tracking() {
     initializeData();
   }, [employeeId, navigate]);
 
-  const fetchEmployee = async () => {
+  const fetchEmployee = async (retryCount = 0) => {
     try {
-      console.log("Fetching employee:", { employeeId });
+      console.log("Fetching employee:", { employeeId, retryCount });
 
       const response = await HttpClient.get(`/api/employees/${employeeId}`);
 
@@ -78,6 +78,14 @@ export default function Tracking() {
       }
     } catch (error) {
       console.error("Error fetching employee:", error);
+
+      // Retry once if it's a network error and we haven't retried yet
+      if (retryCount < 1 && error instanceof TypeError && error.message.includes("fetch")) {
+        console.log("Retrying employee fetch after network error...");
+        setTimeout(() => fetchEmployee(retryCount + 1), 2000);
+        return;
+      }
+
       // Don't crash the app - just log the error and continue
       setEmployee(null);
     }
