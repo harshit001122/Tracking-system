@@ -10,8 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MeetingDetails } from "@shared/api";
-import { AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
+import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
+import { CustomerEmployeeSelector } from "./CustomerEmployeeSelector";
 
 interface EndMeetingModalProps {
   isOpen: boolean;
