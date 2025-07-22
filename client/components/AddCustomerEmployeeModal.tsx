@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CustomerEmployee, Customer } from "@shared/api";
 import { AlertCircle, CheckCircle, UserPlus } from "lucide-react";
 
 interface NewCustomerEmployeeData {
