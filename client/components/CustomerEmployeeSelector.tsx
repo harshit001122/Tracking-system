@@ -259,26 +259,35 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
             />
           </SelectTrigger>
           <SelectContent>
-            {employees.length === 0 && tempEmployees.length === 0 ? (
-              <SelectItem value="no-employees" disabled>
-                No employees found
-              </SelectItem>
-            ) : (
-              <>
-                {/* Show temporary employees first */}
-                {tempEmployees.map((employee) => (
-                  <SelectItem key={employee._id} value={employee._id}>
-                    {employee.CustomerEmpName} ({employee.customerName}) *
+            {(() => {
+              const totalEmployees = employees.length + tempEmployees.length;
+              console.log('Rendering dropdown - Regular employees:', employees.length, 'Temp employees:', tempEmployees.length);
+
+              if (totalEmployees === 0) {
+                return (
+                  <SelectItem value="no-employees" disabled>
+                    No employees found
                   </SelectItem>
-                ))}
-                {/* Show regular employees */}
-                {employees.map((employee) => (
-                  <SelectItem key={employee._id} value={employee._id}>
-                    {employee.CustomerEmpName} ({employee.customerName})
-                  </SelectItem>
-                ))}
-              </>
-            )}
+                );
+              }
+
+              return (
+                <>
+                  {/* Show temporary employees first with * indicator */}
+                  {tempEmployees.map((employee) => (
+                    <SelectItem key={employee._id} value={employee._id}>
+                      {employee.CustomerEmpName} ({employee.customerName}) *
+                    </SelectItem>
+                  ))}
+                  {/* Show regular employees */}
+                  {employees.map((employee) => (
+                    <SelectItem key={employee._id} value={employee._id}>
+                      {employee.CustomerEmpName} ({employee.customerName})
+                    </SelectItem>
+                  ))}
+                </>
+              );
+            })()}
           </SelectContent>
         </Select>
       </div>
