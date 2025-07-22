@@ -44,7 +44,9 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       // Load temporary employees from localStorage on initialization
       try {
         const stored = localStorage.getItem('tempCustomerEmployees');
-        return stored ? JSON.parse(stored) : [];
+        const loaded = stored ? JSON.parse(stored) : [];
+        console.log('Loading temporary employees from localStorage:', loaded);
+        return loaded;
       } catch (error) {
         console.error('Error loading temporary employees:', error);
         return [];
