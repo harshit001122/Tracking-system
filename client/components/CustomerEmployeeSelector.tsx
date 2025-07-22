@@ -98,11 +98,60 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
     }));
 
     const handleEmployeeSelect = (employeeId: string) => {
-      const employee = employees.find((emp) => emp._id === employeeId);
+      // Combine regular and temporary employees
+      const allEmployees = [...employees, ...tempEmployees];
+      const employee = allEmployees.find((emp) => emp._id === employeeId);
+
       if (employee) {
-        const customer = customers.find((c) => c._id === employee.customerId);
-        if (customer) {
-          onEmployeeSelect(employee, customer);
+        // For temp employees, create a temporary customer object
+        if (employee._id.startsWith('temp_')) {
+          const tempCustomer: Customer = {
+            _id: employee.customerId,
+            CustomerCompanyName: employee.customerName,
+            Employees: [employee],
+            // Fill in defaults for required fields
+            GstNumber: "",
+            Status: "Active",
+            RJBDSName: "",
+            LedgerType: { _id: "", Name: "", __v: 0 },
+            Dealer: { _id: "", Name: "", __v: 0 },
+            Mode: { _id: "", Name: "", __v: 0 },
+            CompanyName: { _id: "", companyName: employee.customerName, __v: 0 },
+            Addresses: [],
+            Gst: "",
+            BusinessType: "",
+            AdharNumber: "",
+            PanNumber: "",
+            ImportExportCode: "",
+            WhatsappNumber: "",
+            OpBalance: 0,
+            BankDetails: {
+              AccountholderName: "",
+              AccountNumber: "",
+              IFSC: "",
+              BankName: "",
+              BranchName: "",
+              AccountType: "",
+            },
+            UploadGSTCertificate: null,
+            UploadAdharCardFront: null,
+            UploadAdharCardBack: null,
+            UploadPanCard: null,
+            CancelledCheque: null,
+            DistributorAuthorizedCertificate: null,
+            UploadImportExportCertificate: null,
+            CustomerId: "",
+            CustomerStatus: "Temporary",
+            updatedAt: new Date().toISOString(),
+            __v: 0,
+          };
+          onEmployeeSelect(employee, tempCustomer);
+        } else {
+          // For regular employees, find the actual customer
+          const customer = customers.find((c) => c._id === employee.customerId);
+          if (customer) {
+            onEmployeeSelect(employee, customer);
+          }
         }
       }
     };
