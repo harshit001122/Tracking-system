@@ -89,6 +89,29 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       }
     };
 
+    // Add temporary employee - declared before useEffect that uses it
+    const addTempEmployee = (employee: CustomerEmployee, customerName: string, customerId: string) => {
+      const tempEmployee = {
+        ...employee,
+        customerName,
+        customerId,
+      };
+
+      console.log('Adding temporary employee:', tempEmployee);
+
+      setTempEmployees(prev => {
+        const updated = [...prev, tempEmployee];
+        // Persist to localStorage
+        try {
+          localStorage.setItem('tempCustomerEmployees', JSON.stringify(updated));
+        } catch (error) {
+          console.error('Error saving temporary employees:', error);
+        }
+        console.log('Updated temp employees:', updated);
+        return updated;
+      });
+    };
+
     useEffect(() => {
       fetchCustomers();
     }, []);
@@ -118,29 +141,6 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
         };
       }
     }, [tempEmployees, employees, addTempEmployee]);
-
-    // Add temporary employee
-    const addTempEmployee = (employee: CustomerEmployee, customerName: string, customerId: string) => {
-      const tempEmployee = {
-        ...employee,
-        customerName,
-        customerId,
-      };
-
-      console.log('Adding temporary employee:', tempEmployee);
-
-      setTempEmployees(prev => {
-        const updated = [...prev, tempEmployee];
-        // Persist to localStorage
-        try {
-          localStorage.setItem('tempCustomerEmployees', JSON.stringify(updated));
-        } catch (error) {
-          console.error('Error saving temporary employees:', error);
-        }
-        console.log('Updated temp employees:', updated);
-        return updated;
-      });
-    };
 
     // Clear temporary employees
     const clearTempEmployees = () => {
