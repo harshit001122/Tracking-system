@@ -87,9 +87,13 @@ export default function Tracking() {
         console.error(
           `Failed to fetch meetings: ${response.status} ${response.statusText} - ${errorText}`,
         );
+        // Set empty array to avoid crashes
+        setMeetings([]);
       }
     } catch (error) {
       console.error("Error fetching meetings:", error);
+      // Don't crash the app - just set empty array and continue
+      setMeetings([]);
     } finally {
       setLoading(false);
     }
