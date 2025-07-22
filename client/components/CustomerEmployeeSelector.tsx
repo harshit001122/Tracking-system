@@ -93,6 +93,11 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
       fetchCustomers();
     }, []);
 
+    // Debug effect for tempEmployees changes
+    useEffect(() => {
+      console.log('tempEmployees changed:', tempEmployees);
+    }, [tempEmployees]);
+
     // Add temporary employee
     const addTempEmployee = (employee: CustomerEmployee, customerName: string, customerId: string) => {
       const tempEmployee = {
