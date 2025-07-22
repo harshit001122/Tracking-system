@@ -55,10 +55,10 @@ export class HttpClient {
 
       if (hasFullStory) {
         console.warn(
-          "FullStory detected - will switch to XMLHttpRequest mode on fetch failures",
+          "FullStory detected - switching to XMLHttpRequest mode immediately",
         );
-        // Don't immediately force XHR mode, let fetch fail first then switch
-        // this.useXHROnly = true;
+        // Force XHR mode immediately when FullStory is detected
+        this.useXHROnly = true;
         return;
       }
 
