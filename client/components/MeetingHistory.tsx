@@ -82,11 +82,12 @@ export function MeetingHistory({ employeeId, isOpen, onClose }: MeetingHistoryPr
 
       if (response.ok) {
         const data: MeetingHistoryResponse = await response.json();
+        console.log("Meeting history data received:", data);
         setMeetings(data.meetings);
         setTotal(data.total);
         setTotalPages(data.totalPages);
       } else {
-        console.error("Failed to fetch meeting history");
+        console.error("Failed to fetch meeting history:", response.status, response.statusText);
       }
     } catch (error) {
       console.error("Error fetching meeting history:", error);
