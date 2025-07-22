@@ -172,9 +172,13 @@ export function EndMeetingModal({
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // After successful creation, refresh the customer list to include new employee
+      // Add the new employee to the selector immediately
       if (customerSelectorRef.current) {
-        await customerSelectorRef.current.refreshCustomers();
+        customerSelectorRef.current.addTempEmployee(
+          newEmployee,
+          employeeData.customerName,
+          newCustomer._id
+        );
       }
 
       // Automatically select the newly created employee
