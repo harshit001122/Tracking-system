@@ -237,16 +237,25 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
             />
           </SelectTrigger>
           <SelectContent>
-            {employees.length === 0 ? (
+            {employees.length === 0 && tempEmployees.length === 0 ? (
               <SelectItem value="no-employees" disabled>
                 No employees found
               </SelectItem>
             ) : (
-              employees.map((employee) => (
-                <SelectItem key={employee._id} value={employee._id}>
-                  {employee.CustomerEmpName} ({employee.customerName})
-                </SelectItem>
-              ))
+              <>
+                {/* Show temporary employees first */}
+                {tempEmployees.map((employee) => (
+                  <SelectItem key={employee._id} value={employee._id}>
+                    {employee.CustomerEmpName} ({employee.customerName}) *
+                  </SelectItem>
+                ))}
+                {/* Show regular employees */}
+                {employees.map((employee) => (
+                  <SelectItem key={employee._id} value={employee._id}>
+                    {employee.CustomerEmpName} ({employee.customerName})
+                  </SelectItem>
+                ))}
+              </>
             )}
           </SelectContent>
         </Select>
