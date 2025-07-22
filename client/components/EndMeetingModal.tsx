@@ -168,21 +168,28 @@ export function EndMeetingModal({
       };
 
       console.log("Creating new customer employee:", employeeData);
+      console.log("Generated employee object:", newEmployee);
+      console.log("Generated customer object:", newCustomer);
 
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Add the new employee to the selector immediately
       if (customerSelectorRef.current) {
+        console.log("Adding temp employee to selector...");
         customerSelectorRef.current.addTempEmployee(
           newEmployee,
           employeeData.customerName,
           newCustomer._id
         );
+        console.log("Temp employee added to selector");
+      } else {
+        console.error("customerSelectorRef.current is null!");
       }
 
       // Automatically select the newly created employee
       setTimeout(() => {
+        console.log("Auto-selecting newly created employee...");
         handleCustomerEmployeeSelect(newEmployee, newCustomer);
       }, 100);
 
