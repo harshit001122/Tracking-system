@@ -39,7 +39,16 @@ export const CustomerEmployeeSelector = forwardRef<CustomerEmployeeSelectorRef, 
     >([]);
     const [tempEmployees, setTempEmployees] = useState<
       Array<CustomerEmployee & { customerName: string; customerId: string }>
-    >([]);
+    >(() => {
+      // Load temporary employees from localStorage on initialization
+      try {
+        const stored = localStorage.getItem('tempCustomerEmployees');
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error('Error loading temporary employees:', error);
+        return [];
+      }
+    });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
