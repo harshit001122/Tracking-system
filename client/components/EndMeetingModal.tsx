@@ -45,7 +45,6 @@ export function EndMeetingModal({
   // Customer employee selection state
   const [selectedCustomerEmployee, setSelectedCustomerEmployee] = useState<CustomerEmployee | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [useManualEntry, setUseManualEntry] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -102,26 +101,7 @@ export function EndMeetingModal({
     }));
   };
 
-  // Toggle between manual entry and employee selection
-  const handleToggleManualEntry = () => {
-    setUseManualEntry(!useManualEntry);
-    if (!useManualEntry) {
-      // Clear selection when switching to manual
-      setSelectedCustomerEmployee(null);
-      setSelectedCustomer(null);
-    } else {
-      // Clear manual data when switching to selection
-      setFormData(prev => ({
-        ...prev,
-        customerName: "",
-        customerEmployeeName: "",
-        customerEmail: "",
-        customerMobile: "",
-        customerDesignation: "",
-        customerDepartment: "",
-      }));
-    }
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,7 +137,6 @@ export function EndMeetingModal({
     setErrors({});
     setSelectedCustomerEmployee(null);
     setSelectedCustomer(null);
-    setUseManualEntry(false);
     onClose();
   };
 
@@ -177,183 +156,59 @@ export function EndMeetingModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Customer Employee Selection Toggle */}
-          <div className="flex items-center justify-between py-2 border-b">
-            <div className="flex items-center space-x-2">
-              <User className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Customer Information</span>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleToggleManualEntry}
-              disabled={isFormDisabled}
-            >
-              {useManualEntry ? "Select from Database" : "Enter Manually"}
-            </Button>
+          {/* Customer Employee Selection Header */}
+          <div className="flex items-center space-x-2 py-2 border-b">
+            <User className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Select Customer Employee</span>
           </div>
 
           {/* Customer Employee Selection */}
-          {!useManualEntry ? (
-            <div className="space-y-4">
-              <CustomerEmployeeSelector
-                onEmployeeSelect={handleCustomerEmployeeSelect}
-                selectedEmployeeId={selectedCustomerEmployee?._id}
-                disabled={isFormDisabled}
-              />
+          <div className="space-y-4">
+            <CustomerEmployeeSelector
+              onEmployeeSelect={handleCustomerEmployeeSelect}
+              selectedEmployeeId={selectedCustomerEmployee?._id}
+              disabled={isFormDisabled}
+            />
 
-              {selectedCustomerEmployee && (
-                <div className="p-4 border rounded-lg bg-muted/20">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Building2 className="h-4 w-4 text-primary" />
-                    <span className="font-medium text-sm">Selected Customer Details</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Company:</span>
-                      <div className="font-medium">{selectedCustomer?.CustomerCompanyName}</div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Employee:</span>
-                      <div className="font-medium">{selectedCustomerEmployee.CustomerEmpName}</div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Position:</span>
-                      <div>{selectedCustomerEmployee.Designation}</div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Department:</span>
-                      <div>{selectedCustomerEmployee.Department}</div>
-                    </div>
-                    {selectedCustomerEmployee.Email && (
-                      <div>
-                        <span className="text-muted-foreground">Email:</span>
-                        <div>{selectedCustomerEmployee.Email}</div>
-                      </div>
-                    )}
-                    {selectedCustomerEmployee.Mobile && (
-                      <div>
-                        <span className="text-muted-foreground">Mobile:</span>
-                        <div>{selectedCustomerEmployee.Mobile}</div>
-                      </div>
-                    )}
-                  </div>
+            {selectedCustomerEmployee && (
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">Selected Customer Details</span>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Manual Entry Fields */}
-              {/* Customer Name */}
-              <div className="space-y-2">
-                <Label htmlFor="customerName" className="text-sm">
-                  Customer Name
-                  <span className="text-muted-foreground ml-1">(Optional)</span>
-                </Label>
-                <Input
-                  id="customerName"
-                  type="text"
-                  placeholder="Enter customer name"
-                  value={formData.customerName || ""}
-                  onChange={(e) => handleInputChange("customerName", e.target.value)}
-                  disabled={isFormDisabled}
-                />
-              </div>
-
-              {/* Customer Employee Name */}
-              <div className="space-y-2">
-                <Label htmlFor="customerEmployeeName" className="text-sm">
-                  Customer Employee Name
-                  <span className="text-muted-foreground ml-1">(Optional)</span>
-                </Label>
-                <Input
-                  id="customerEmployeeName"
-                  type="text"
-                  placeholder="Enter employee name you met"
-                  value={formData.customerEmployeeName || ""}
-                  onChange={(e) => handleInputChange("customerEmployeeName", e.target.value)}
-                  disabled={isFormDisabled}
-                />
-              </div>
-
-              {/* Customer Email */}
-              <div className="space-y-2">
-                <Label htmlFor="customerEmail" className="text-sm">
-                  Customer Email
-                  <span className="text-muted-foreground ml-1">(Optional)</span>
-                </Label>
-                <Input
-                  id="customerEmail"
-                  type="email"
-                  placeholder="customer@example.com"
-                  value={formData.customerEmail || ""}
-                  onChange={(e) => handleInputChange("customerEmail", e.target.value)}
-                  disabled={isFormDisabled}
-                />
-                {errors.customerEmail && (
-                  <div className="flex items-center space-x-1 text-sm text-destructive">
-                    <AlertCircle className="h-3 w-3" />
-                    <span>{errors.customerEmail}</span>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Company:</span>
+                    <div className="font-medium">{selectedCustomer?.CustomerCompanyName}</div>
                   </div>
-                )}
-              </div>
-
-              {/* Customer Mobile */}
-              <div className="space-y-2">
-                <Label htmlFor="customerMobile" className="text-sm">
-                  Customer Mobile
-                  <span className="text-muted-foreground ml-1">(Optional)</span>
-                </Label>
-                <Input
-                  id="customerMobile"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={formData.customerMobile || ""}
-                  onChange={(e) => handleInputChange("customerMobile", e.target.value)}
-                  disabled={isFormDisabled}
-                />
-                {errors.customerMobile && (
-                  <div className="flex items-center space-x-1 text-sm text-destructive">
-                    <AlertCircle className="h-3 w-3" />
-                    <span>{errors.customerMobile}</span>
+                  <div>
+                    <span className="text-muted-foreground">Employee:</span>
+                    <div className="font-medium">{selectedCustomerEmployee.CustomerEmpName}</div>
                   </div>
-                )}
+                  <div>
+                    <span className="text-muted-foreground">Position:</span>
+                    <div>{selectedCustomerEmployee.Designation}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Department:</span>
+                    <div>{selectedCustomerEmployee.Department}</div>
+                  </div>
+                  {selectedCustomerEmployee.Email && (
+                    <div>
+                      <span className="text-muted-foreground">Email:</span>
+                      <div>{selectedCustomerEmployee.Email}</div>
+                    </div>
+                  )}
+                  {selectedCustomerEmployee.Mobile && (
+                    <div>
+                      <span className="text-muted-foreground">Mobile:</span>
+                      <div>{selectedCustomerEmployee.Mobile}</div>
+                    </div>
+                  )}
+                </div>
               </div>
-
-              {/* Customer Designation */}
-              <div className="space-y-2">
-                <Label htmlFor="customerDesignation" className="text-sm">
-                  Customer Designation
-                  <span className="text-muted-foreground ml-1">(Optional)</span>
-                </Label>
-                <Input
-                  id="customerDesignation"
-                  type="text"
-                  placeholder="e.g., Manager, Director, CEO"
-                  value={formData.customerDesignation || ""}
-                  onChange={(e) => handleInputChange("customerDesignation", e.target.value)}
-                  disabled={isFormDisabled}
-                />
-              </div>
-
-              {/* Customer Department */}
-              <div className="space-y-2">
-                <Label htmlFor="customerDepartment" className="text-sm">
-                  Customer Department
-                  <span className="text-muted-foreground ml-1">(Optional)</span>
-                </Label>
-                <Input
-                  id="customerDepartment"
-                  type="text"
-                  placeholder="e.g., Sales, IT, HR, Operations"
-                  value={formData.customerDepartment || ""}
-                  onChange={(e) => handleInputChange("customerDepartment", e.target.value)}
-                  disabled={isFormDisabled}
-                />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Discussion - Mandatory */}
           <div className="space-y-2">
