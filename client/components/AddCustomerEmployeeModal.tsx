@@ -23,7 +23,7 @@ interface NewCustomerEmployeeData {
 interface AddCustomerEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddEmployee: (employeeData: NewCustomerEmployeeData) => Promise<void>;
+  onAddEmployee: (employeeData: NewCustomerEmployeeData) => Promise<{ employee: CustomerEmployee; customer: Customer } | null>;
   isLoading?: boolean;
 }
 
