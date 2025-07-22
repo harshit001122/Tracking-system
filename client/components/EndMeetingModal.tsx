@@ -113,20 +113,81 @@ export function EndMeetingModal({
 
   // Handle adding new customer employee
   const handleAddNewEmployee = async (employeeData: NewCustomerEmployeeData) => {
-    // For now, we'll simulate adding the employee locally
-    // In a real implementation, you would call an API endpoint here
-    console.log("Adding new customer employee:", employeeData);
+    try {
+      // Create a new customer employee object with generated ID
+      const newEmployeeId = `temp_${Date.now()}`;
+      const newEmployee: CustomerEmployee = {
+        _id: newEmployeeId,
+        CustomerEmpName: employeeData.customerEmployeeName,
+        Designation: employeeData.designation,
+        Department: employeeData.department,
+        Mobile: employeeData.mobile,
+        Email: employeeData.email,
+      };
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      // Create a temporary customer object if it's a new company
+      const newCustomer: Customer = {
+        _id: `temp_customer_${Date.now()}`,
+        CustomerCompanyName: employeeData.customerName,
+        Employees: [newEmployee],
+        // Fill in other required fields with defaults
+        GstNumber: "",
+        Status: "Active",
+        RJBDSName: "",
+        LedgerType: { _id: "", Name: "", __v: 0 },
+        Dealer: { _id: "", Name: "", __v: 0 },
+        Mode: { _id: "", Name: "", __v: 0 },
+        CompanyName: { _id: "", companyName: employeeData.customerName, __v: 0 },
+        Addresses: [],
+        Gst: "",
+        BusinessType: "",
+        AdharNumber: "",
+        PanNumber: "",
+        ImportExportCode: "",
+        WhatsappNumber: "",
+        OpBalance: 0,
+        BankDetails: {
+          AccountholderName: "",
+          AccountNumber: "",
+          IFSC: "",
+          BankName: "",
+          BranchName: "",
+          AccountType: "",
+        },
+        UploadGSTCertificate: null,
+        UploadAdharCardFront: null,
+        UploadAdharCardBack: null,
+        UploadPanCard: null,
+        CancelledCheque: null,
+        DistributorAuthorizedCertificate: null,
+        UploadImportExportCertificate: null,
+        CustomerId: "",
+        CustomerStatus: "Temporary",
+        updatedAt: new Date().toISOString(),
+        __v: 0,
+      };
 
-    // After successful creation, refresh the customer list
-    if (customerSelectorRef.current) {
-      await customerSelectorRef.current.refreshCustomers();
+      console.log("Creating new customer employee:", employeeData);
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // After successful creation, refresh the customer list to include new employee
+      if (customerSelectorRef.current) {
+        await customerSelectorRef.current.refreshCustomers();
+      }
+
+      // Automatically select the newly created employee
+      setTimeout(() => {
+        handleCustomerEmployeeSelect(newEmployee, newCustomer);
+      }, 100);
+
+      console.log("Customer employee added successfully!");
+      return { employee: newEmployee, customer: newCustomer };
+    } catch (error) {
+      console.error("Error adding customer employee:", error);
+      throw error;
     }
-
-    // Show success message (you could add a toast here)
-    console.log("Customer employee added successfully!");
   };
 
 
