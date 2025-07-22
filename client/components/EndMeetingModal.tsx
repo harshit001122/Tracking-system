@@ -85,6 +85,44 @@ export function EndMeetingModal({
     }
   };
 
+  // Handle customer employee selection
+  const handleCustomerEmployeeSelect = (employee: CustomerEmployee, customer: Customer) => {
+    setSelectedCustomerEmployee(employee);
+    setSelectedCustomer(customer);
+
+    // Auto-fill form data from selected employee
+    setFormData(prev => ({
+      ...prev,
+      customerName: customer.CustomerCompanyName,
+      customerEmployeeName: employee.CustomerEmpName,
+      customerEmail: employee.Email,
+      customerMobile: employee.Mobile,
+      customerDesignation: employee.Designation,
+      customerDepartment: employee.Department,
+    }));
+  };
+
+  // Toggle between manual entry and employee selection
+  const handleToggleManualEntry = () => {
+    setUseManualEntry(!useManualEntry);
+    if (!useManualEntry) {
+      // Clear selection when switching to manual
+      setSelectedCustomerEmployee(null);
+      setSelectedCustomer(null);
+    } else {
+      // Clear manual data when switching to selection
+      setFormData(prev => ({
+        ...prev,
+        customerName: "",
+        customerEmployeeName: "",
+        customerEmail: "",
+        customerMobile: "",
+        customerDesignation: "",
+        customerDepartment: "",
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
