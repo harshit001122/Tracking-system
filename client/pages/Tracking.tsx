@@ -198,13 +198,21 @@ export default function Tracking() {
       if (response.ok) {
         console.log("Meeting ended successfully");
 
-        // Add to meeting history if we have a tracking session
-        if (currentTrackingSession) {
-          await HttpClient.post("/api/meeting-history", {
-            sessionId: currentTrackingSession.id,
+        // Add to meeting history (always add, even without tracking session)
+        try {
+          const historyResponse = await HttpClient.post("/api/meeting-history", {
+            sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
             employeeId,
             meetingDetails,
           });
+
+          if (historyResponse.ok) {
+            console.log("Meeting added to history successfully");
+          } else {
+            console.error("Failed to add meeting to history");
+          }
+        } catch (historyError) {
+          console.error("Error adding meeting to history:", historyError);
         }
 
         // Update employee status to active
