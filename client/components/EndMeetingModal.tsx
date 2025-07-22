@@ -200,6 +200,12 @@ export function EndMeetingModal({
               disabled={isFormDisabled}
               onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
+            {errors.customerEmployee && (
+              <div className="flex items-center space-x-1 text-sm text-destructive">
+                <AlertCircle className="h-3 w-3" />
+                <span>{errors.customerEmployee}</span>
+              </div>
+            )}
 
             {selectedCustomerEmployee && (
               <div className="p-4 border rounded-lg bg-muted/20">
