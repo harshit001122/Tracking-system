@@ -42,6 +42,11 @@ export function EndMeetingModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Customer employee selection state
+  const [selectedCustomerEmployee, setSelectedCustomerEmployee] = useState<CustomerEmployee | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [useManualEntry, setUseManualEntry] = useState(false);
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
