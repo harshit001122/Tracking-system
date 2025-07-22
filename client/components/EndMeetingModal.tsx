@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
 import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
-import { CustomerEmployeeSelector } from "./CustomerEmployeeSelector";
+import { CustomerEmployeeSelector, CustomerEmployeeSelectorRef } from "./CustomerEmployeeSelector";
+import { AddCustomerEmployeeModal, NewCustomerEmployeeData } from "./AddCustomerEmployeeModal";
 
 interface EndMeetingModalProps {
   isOpen: boolean;
@@ -45,6 +46,10 @@ export function EndMeetingModal({
   // Customer employee selection state
   const [selectedCustomerEmployee, setSelectedCustomerEmployee] = useState<CustomerEmployee | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
+
+  // Ref for customer employee selector
+  const customerSelectorRef = useRef<CustomerEmployeeSelectorRef>(null);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -101,6 +106,24 @@ export function EndMeetingModal({
     }));
   };
 
+  // Handle adding new customer employee
+  const handleAddNewEmployee = async (employeeData: NewCustomerEmployeeData) => {
+    // For now, we'll simulate adding the employee locally
+    // In a real implementation, you would call an API endpoint here
+    console.log("Adding new customer employee:", employeeData);
+
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // After successful creation, refresh the customer list
+    if (customerSelectorRef.current) {
+      await customerSelectorRef.current.refreshCustomers();
+    }
+
+    // Show success message (you could add a toast here)
+    console.log("Customer employee added successfully!");
+  };
+
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,6 +160,7 @@ export function EndMeetingModal({
     setErrors({});
     setSelectedCustomerEmployee(null);
     setSelectedCustomer(null);
+    setIsAddEmployeeOpen(false);
     onClose();
   };
 
@@ -165,9 +189,11 @@ export function EndMeetingModal({
           {/* Customer Employee Selection */}
           <div className="space-y-4">
             <CustomerEmployeeSelector
+              ref={customerSelectorRef}
               onEmployeeSelect={handleCustomerEmployeeSelect}
               selectedEmployeeId={selectedCustomerEmployee?._id}
               disabled={isFormDisabled}
+              onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
 
             {selectedCustomerEmployee && (
@@ -266,6 +292,14 @@ export function EndMeetingModal({
             </Button>
           </div>
         </form>
+
+        {/* Add Customer Employee Modal */}
+        <AddCustomerEmployeeModal
+          isOpen={isAddEmployeeOpen}
+          onClose={() => setIsAddEmployeeOpen(false)}
+          onAddEmployee={handleAddNewEmployee}
+          isLoading={isLoading}
+        />
       </DialogContent>
     </Dialog>
   );
