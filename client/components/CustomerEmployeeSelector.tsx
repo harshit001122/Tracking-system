@@ -232,12 +232,16 @@ export const CustomerEmployeeSelector = forwardRef<
             updatedAt: new Date().toISOString(),
             __v: 0,
           };
+          console.log("CustomerEmployeeSelector: Calling onEmployeeSelect for temp employee:", employee.CustomerEmpName, tempCustomer.CustomerCompanyName);
           onEmployeeSelect(employee, tempCustomer);
         } else {
           // For regular employees, find the actual customer
           const customer = customers.find((c) => c._id === employee.customerId);
           if (customer) {
+            console.log("CustomerEmployeeSelector: Calling onEmployeeSelect for regular employee:", employee.CustomerEmpName, customer.CustomerCompanyName);
             onEmployeeSelect(employee, customer);
+          } else {
+            console.error("CustomerEmployeeSelector: Customer not found for employee:", employee);
           }
         }
       }
