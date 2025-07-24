@@ -67,12 +67,10 @@ export function SimpleSearchableSelect({
 
   const handleSelect = (optionValue: string) => {
     try {
-      console.log("SimpleSearchableSelect: Selecting option:", optionValue);
       const newValue = optionValue === value ? "" : optionValue;
       onValueChange(newValue);
       setOpen(false);
       setSearchValue("");
-      console.log("SimpleSearchableSelect: Selection complete, new value:", newValue);
     } catch (error) {
       console.error("Error in SimpleSearchableSelect onSelect:", error);
     }
