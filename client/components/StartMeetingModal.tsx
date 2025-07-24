@@ -321,33 +321,51 @@ export function StartMeetingModal({
                 </button>
               </div>
             ) : (
-              <SearchableSelect
-                value={selectedLead}
-                onValueChange={setSelectedLead}
-                options={
-                  Array.isArray(leads)
-                    ? leads
-                        .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
-                        .map((lead): SearchableSelectOption => ({
-                          value: lead.Id,
-                          label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
-                          searchTerms: [
-                            lead.CompanyName,
-                            lead.Name,
-                            lead.Email || "",
-                            lead.Subject || "",
-                            lead.Stage || ""
-                          ].filter(Boolean),
-                        }))
-                    : []
-                }
-                placeholder={
-                  loadingLeads ? "Loading leads..." : "Select a lead (optional)"
-                }
-                emptyMessage="No leads found"
-                disabled={loadingLeads}
-                searchPlaceholder="Search leads by ID, company, name..."
-              />
+              <>
+                {/* Try SearchableSelect first, fallback to regular Select if error */}
+                {leads && leads.length > 0 ? (
+                  <SearchableSelect
+                    value={selectedLead}
+                    onValueChange={setSelectedLead}
+                    options={
+                      Array.isArray(leads)
+                        ? leads
+                            .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
+                            .map((lead): SearchableSelectOption => ({
+                              value: lead.Id,
+                              label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
+                              searchTerms: [
+                                lead.CompanyName,
+                                lead.Name,
+                                lead.Email || "",
+                                lead.Subject || "",
+                                lead.Stage || ""
+                              ].filter(Boolean),
+                            }))
+                        : []
+                    }
+                    placeholder={
+                      loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                    }
+                    emptyMessage="No leads found"
+                    disabled={loadingLeads}
+                    searchPlaceholder="Search leads by ID, company, name..."
+                  />
+                ) : (
+                  <Select value={selectedLead} onValueChange={setSelectedLead} disabled={loadingLeads}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={
+                        loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="no-leads" disabled>
+                        {loadingLeads ? "Loading..." : "No leads available"}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              </>
             )}
             {selectedLead && (
               <div className="text-xs text-muted-foreground">
