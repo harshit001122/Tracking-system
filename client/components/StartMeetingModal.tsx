@@ -68,6 +68,43 @@ export function StartMeetingModal({
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
+  const [customerError, setCustomerError] = useState<string | null>(null);
+
+  // Fetch customers from external API
+  const fetchCustomers = async () => {
+    setLoadingCustomers(true);
+    setCustomerError(null);
+    try {
+      console.log("Fetching companies from external API for start meeting...");
+      const response = await fetch(
+        "https://jbdspower.in/LeafNetServer/api/customer",
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch customers: ${response.statusText}`);
+      }
+      const data = await response.json();
+
+      // The API returns an array directly
+      const customerArray = Array.isArray(data) ? data : [];
+      console.log(`Fetched ${customerArray.length} companies for start meeting`);
+      setCustomers(customerArray);
+    } catch (err) {
+      console.error("Error fetching customers for start meeting:", err);
+      setCustomerError(
+        err instanceof Error ? err.message : "Failed to fetch customers",
+      );
+    } finally {
+      setLoadingCustomers(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchCustomers();
+    }
+  }, [isOpen]);
 
   const handleSubmit = () => {
     // Validate form
@@ -104,6 +141,7 @@ export function StartMeetingModal({
     setReason("");
     setNotes("");
     setErrors({});
+    setCustomerError(null);
     onClose();
   };
 
