@@ -26,6 +26,7 @@ export interface CustomerEmployeeSelectorRef {
     customerId: string,
   ) => void;
   clearTempEmployees: () => void;
+  resetSelection: () => void;
 }
 
 export const CustomerEmployeeSelector = forwardRef<
@@ -47,18 +48,7 @@ export const CustomerEmployeeSelector = forwardRef<
     >([]);
     const [tempEmployees, setTempEmployees] = useState<
       Array<CustomerEmployee & { customerName: string; customerId: string }>
-    >(() => {
-      // Load temporary employees from localStorage on initialization
-      try {
-        const stored = localStorage.getItem("tempCustomerEmployees");
-        const loaded = stored ? JSON.parse(stored) : [];
-        console.log("Loading temporary employees from localStorage:", loaded);
-        return loaded;
-      } catch (error) {
-        console.error("Error loading temporary employees:", error);
-        return [];
-      }
-    });
+    >([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -164,6 +154,7 @@ export const CustomerEmployeeSelector = forwardRef<
 
     // Clear temporary employees
     const clearTempEmployees = () => {
+      console.log("Clearing temporary employees");
       setTempEmployees([]);
       try {
         localStorage.removeItem("tempCustomerEmployees");
@@ -172,11 +163,18 @@ export const CustomerEmployeeSelector = forwardRef<
       }
     };
 
+    // Reset selection state
+    const resetSelection = () => {
+      console.log("Resetting customer employee selection");
+      clearTempEmployees();
+    };
+
     // Expose refresh function and addTempEmployee via ref
     useImperativeHandle(ref, () => ({
       refreshCustomers: fetchCustomers,
       addTempEmployee,
       clearTempEmployees,
+      resetSelection,
     }));
 
     const handleEmployeeSelect = (employeeId: string) => {
