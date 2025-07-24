@@ -88,5 +88,9 @@ export function createServer() {
   app.get("/api/meeting-history", getMeetingHistory);
   app.post("/api/meeting-history", addMeetingToHistory);
 
+  // Analytics routes
+  app.get("/api/analytics/employees", getEmployeeAnalytics);
+  app.get("/api/analytics/trends", getMeetingTrends);
+
   return app;
 }
