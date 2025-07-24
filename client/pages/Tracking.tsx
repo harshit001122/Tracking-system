@@ -512,7 +512,7 @@ export default function Tracking() {
                 </div>
 
                 {/* End Meeting Button - Shows when employee is in meeting */}
-                {employee.status === "meeting" && (
+                {console.log("Employee status:", employee.status, "| Meetings:", meetings) || employee.status === "meeting" && (
                   <div className="pt-4 pb-2">
                     <Button
                       variant="destructive"
