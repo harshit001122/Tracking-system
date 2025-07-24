@@ -237,7 +237,11 @@ export function EndMeetingModal({
     setIsSubmitting(true);
     try {
       await onEndMeeting(formData);
-      console.log("Meeting ended successfully");
+      console.log("Meeting ended successfully, clearing temp employees");
+      // Clear temporary employees after successful meeting end
+      if (customerSelectorRef.current) {
+        customerSelectorRef.current.clearTempEmployees();
+      }
       handleClose();
     } catch (error) {
       console.error("Error ending meeting:", error);
@@ -263,16 +267,13 @@ export function EndMeetingModal({
       discussion: "",
     });
     setErrors({});
+    setSelectedCustomerEmployee(null);
     setSelectedCustomer(null);
-    setCustomerEmployeeName("");
-    setCustomerEmployeeDesignation("");
-    setCustomerEmployeeDepartment("");
-    setCustomerEmployeeEmail("");
-    setCustomerEmployeeMobile("");
+    setIsAddEmployeeOpen(false);
 
-    // Reset the company selector
-    if (companySelectorRef.current) {
-      companySelectorRef.current.resetSelection();
+    // Reset the customer employee selector and clear any temporary employees
+    if (customerSelectorRef.current) {
+      customerSelectorRef.current.resetSelection();
     }
 
     onClose();
