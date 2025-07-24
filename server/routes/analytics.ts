@@ -1,11 +1,7 @@
 import { RequestHandler } from "express";
 import { format, startOfDay, endOfDay, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, parseISO } from "date-fns";
-import { fetchExternalUsers, mapExternalUserToEmployee } from "./employees";
-
-// Import meetings and tracking data (assuming we can access them)
-// This would normally come from a database
-let meetings: any[] = []; // This should be imported from meetings.ts
-let employeeStatuses: Record<string, any> = {}; // This should be imported from employees.ts
+// We'll create our own functions here since the employees module doesn't export what we need
+import { ExternalUser, Employee } from "@shared/api";
 
 // Function to get date range based on filter
 function getDateRange(dateRange: string, startDate?: string, endDate?: string) {
