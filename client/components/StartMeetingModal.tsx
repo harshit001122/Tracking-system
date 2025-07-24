@@ -250,38 +250,36 @@ export function StartMeetingModal({
                 </div>
               </div>
             ) : (
-              <Select value={clientName} onValueChange={setClientName}>
-                <SelectTrigger
-                  className={errors.client ? "border-destructive" : ""}
-                >
-                  <SelectValue
-                    placeholder={
-                      loadingCustomers ? (
-                        <div className="flex items-center space-x-2">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Loading companies...</span>
-                        </div>
-                      ) : (
-                        "Select a company or choose custom"
-                      )
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {customers.length === 0 && !loadingCustomers ? (
-                    <SelectItem value="no-companies" disabled>
-                      No companies found
-                    </SelectItem>
-                  ) : (
-                    customers.map((customer) => (
-                      <SelectItem key={customer._id} value={customer.CustomerCompanyName}>
-                        {customer.CustomerCompanyName}
-                      </SelectItem>
-                    ))
-                  )}
-                  <SelectItem value="custom">Custom Client...</SelectItem>
-                </SelectContent>
-              </Select>
+              <SimpleSearchableSelect
+                value={clientName}
+                onValueChange={setClientName}
+                options={[
+                  // Regular customers
+                  ...(Array.isArray(customers)
+                    ? customers
+                        .filter(customer => customer && customer.CustomerCompanyName)
+                        .map((customer): SimpleSearchableSelectOption => ({
+                          value: customer.CustomerCompanyName,
+                          label: customer.CustomerCompanyName,
+                          searchTerms: [customer.CustomerCompanyName],
+                        }))
+                    : []
+                  ),
+                  // Custom option
+                  {
+                    value: "custom",
+                    label: "Custom Client...",
+                    searchTerms: ["custom", "manual", "other"],
+                  }
+                ]}
+                placeholder={
+                  loadingCustomers ? "Loading companies..." : "Select a company or choose custom"
+                }
+                emptyMessage="No companies found"
+                disabled={loadingCustomers}
+                searchPlaceholder="Search companies..."
+                className={errors.client ? "border-destructive" : ""}
+              />
             )}
             {errors.client && (
               <p className="text-sm text-destructive">{errors.client}</p>
