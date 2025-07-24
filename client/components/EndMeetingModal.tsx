@@ -297,110 +297,71 @@ export function EndMeetingModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Company Selection Header */}
+          {/* Customer Employee Selection Header */}
           <div className="flex items-center space-x-2 py-2 border-b">
-            <Building2 className="h-4 w-4 text-primary" />
+            <User className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">
-              Select Company & Customer Details
+              Select Customer Employee
             </span>
           </div>
 
-          {/* Company Selection */}
+          {/* Customer Employee Selection */}
           <div className="space-y-4">
-            <CompanySelector
-              ref={companySelectorRef}
-              onCompanySelect={handleCompanySelect}
-              selectedCustomerId={selectedCustomer?._id}
+            <CustomerEmployeeSelector
+              ref={customerSelectorRef}
+              onEmployeeSelect={handleCustomerEmployeeSelect}
+              selectedEmployeeId={selectedCustomerEmployee?._id}
               disabled={isFormDisabled}
+              onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
-            {errors.company && (
+            {errors.customerEmployee && (
               <div className="flex items-center space-x-1 text-sm text-destructive">
                 <AlertCircle className="h-3 w-3" />
-                <span>{errors.company}</span>
+                <span>{errors.customerEmployee}</span>
               </div>
             )}
 
-            {selectedCustomer && (
+            {selectedCustomerEmployee && (
               <div className="p-4 border rounded-lg bg-muted/20">
                 <div className="flex items-center space-x-2 mb-3">
                   <Building2 className="h-4 w-4 text-primary" />
                   <span className="font-medium text-sm">
-                    Selected Company: {selectedCustomer.CustomerCompanyName}
+                    Selected Customer Details
                   </span>
                 </div>
-
-                {/* Customer Employee Details Form */}
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* Employee Name */}
-                    <div className="space-y-1">
-                      <Label htmlFor="empName" className="text-xs">
-                        Contact Person Name
-                        <span className="text-destructive ml-1">*</span>
-                      </Label>
-                      <Input
-                        id="empName"
-                        placeholder="Contact person name"
-                        value={customerEmployeeName}
-                        onChange={(e) => handleEmployeeFieldChange("name", e.target.value)}
-                        disabled={isFormDisabled}
-                        className={errors.customerEmployeeName ? "border-destructive" : ""}
-                      />
-                      {errors.customerEmployeeName && (
-                        <p className="text-xs text-destructive">{errors.customerEmployeeName}</p>
-                      )}
-                    </div>
-
-                    {/* Designation */}
-                    <div className="space-y-1">
-                      <Label htmlFor="designation" className="text-xs">Designation</Label>
-                      <Input
-                        id="designation"
-                        placeholder="Position/Title"
-                        value={customerEmployeeDesignation}
-                        onChange={(e) => handleEmployeeFieldChange("designation", e.target.value)}
-                        disabled={isFormDisabled}
-                      />
-                    </div>
-
-                    {/* Department */}
-                    <div className="space-y-1">
-                      <Label htmlFor="department" className="text-xs">Department</Label>
-                      <Input
-                        id="department"
-                        placeholder="Department"
-                        value={customerEmployeeDepartment}
-                        onChange={(e) => handleEmployeeFieldChange("department", e.target.value)}
-                        disabled={isFormDisabled}
-                      />
-                    </div>
-
-                    {/* Email */}
-                    <div className="space-y-1">
-                      <Label htmlFor="empEmail" className="text-xs">Email</Label>
-                      <Input
-                        id="empEmail"
-                        type="email"
-                        placeholder="Email address"
-                        value={customerEmployeeEmail}
-                        onChange={(e) => handleEmployeeFieldChange("email", e.target.value)}
-                        disabled={isFormDisabled}
-                      />
-                    </div>
-
-                    {/* Mobile */}
-                    <div className="space-y-1 col-span-2">
-                      <Label htmlFor="empMobile" className="text-xs">Mobile</Label>
-                      <Input
-                        id="empMobile"
-                        type="tel"
-                        placeholder="Mobile number"
-                        value={customerEmployeeMobile}
-                        onChange={(e) => handleEmployeeFieldChange("mobile", e.target.value)}
-                        disabled={isFormDisabled}
-                      />
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Company:</span>
+                    <div className="font-medium">
+                      {selectedCustomer?.CustomerCompanyName}
                     </div>
                   </div>
+                  <div>
+                    <span className="text-muted-foreground">Employee:</span>
+                    <div className="font-medium">
+                      {selectedCustomerEmployee.CustomerEmpName}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Position:</span>
+                    <div>{selectedCustomerEmployee.Designation}</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Department:</span>
+                    <div>{selectedCustomerEmployee.Department}</div>
+                  </div>
+                  {selectedCustomerEmployee.Email && (
+                    <div>
+                      <span className="text-muted-foreground">Email:</span>
+                      <div>{selectedCustomerEmployee.Email}</div>
+                    </div>
+                  )}
+                  {selectedCustomerEmployee.Mobile && (
+                    <div>
+                      <span className="text-muted-foreground">Mobile:</span>
+                      <div>{selectedCustomerEmployee.Mobile}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
