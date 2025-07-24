@@ -535,18 +535,7 @@ export default function Tracking() {
                       variant="destructive"
                       size="sm"
                       className="w-full"
-                      onClick={() => {
-                        // Find the active meeting for this employee
-                        const activeMeeting = meetings.find(
-                          (meeting) => meeting.status === "in-progress",
-                        );
-                        if (activeMeeting) {
-                          handleEndMeetingClick(activeMeeting.id);
-                        } else {
-                          console.error("No active meeting found to end. Available meetings:", meetings);
-                          alert("No active meeting found for this employee. Please ensure a meeting has been started.");
-                        }
-                      }}
+                      onClick={handleEndMeetingAttempt}
                       disabled={isEndingMeeting !== null}
                     >
                       <Clock className="h-4 w-4 mr-2" />
@@ -598,18 +587,7 @@ export default function Tracking() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => {
-                        // Find the active meeting for this employee
-                        const activeMeeting = meetings.find(
-                          (meeting) => meeting.status === "in-progress",
-                        );
-                        if (activeMeeting) {
-                          handleEndMeetingClick(activeMeeting.id);
-                        } else {
-                          console.error("No active meeting found to end. Available meetings:", meetings);
-                          alert("No active meeting found for this employee. Please ensure a meeting has been started.");
-                        }
-                      }}
+                      onClick={handleEndMeetingAttempt}
                       disabled={isEndingMeeting !== null}
                     >
                       <Clock className="h-4 w-4 mr-2" />
