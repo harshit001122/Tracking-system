@@ -236,6 +236,9 @@ export function EndMeetingModal({
 
     setIsSubmitting(true);
     try {
+      console.log("EndMeetingModal: Submitting form data:", formData);
+      console.log("EndMeetingModal: Selected customer employee:", selectedCustomerEmployee);
+      console.log("EndMeetingModal: Selected customer:", selectedCustomer);
       await onEndMeeting(formData);
       console.log("Meeting ended successfully, clearing temp employees");
       // Clear temporary employees after successful meeting end
