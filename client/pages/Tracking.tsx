@@ -188,6 +188,7 @@ export default function Tracking() {
   const [isEndingMeeting, setIsEndingMeeting] = useState<string | null>(null);
 
   const handleEndMeetingClick = (meetingId: string) => {
+    console.log("handleEndMeetingClick called with meetingId:", meetingId);
     setActiveMeetingId(meetingId);
     setIsEndMeetingModalOpen(true);
   };
