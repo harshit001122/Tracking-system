@@ -96,10 +96,11 @@ export function StartMeetingModal({
         throw new Error(`Failed to fetch customers: ${response.statusText}`);
       }
       const data = await response.json();
+      console.log("Customer API raw response:", data);
 
       // The API returns an array directly
       const customerArray = Array.isArray(data) ? data : [];
-      console.log(`Fetched ${customerArray.length} companies for start meeting`);
+      console.log(`Fetched ${customerArray.length} companies for start meeting`, customerArray.slice(0, 3));
       setCustomers(customerArray);
     } catch (err) {
       console.error("Error fetching customers for start meeting:", err);
@@ -124,10 +125,11 @@ export function StartMeetingModal({
         throw new Error(`Failed to fetch leads: ${response.statusText}`);
       }
       const data = await response.json();
+      console.log("Leads API raw response:", data);
 
       // The API returns an array directly
       const leadArray = Array.isArray(data) ? data : [];
-      console.log(`Fetched ${leadArray.length} leads for start meeting`);
+      console.log(`Fetched ${leadArray.length} leads for start meeting`, leadArray.slice(0, 3));
       setLeads(leadArray);
     } catch (err) {
       console.error("Error fetching leads for start meeting:", err);
