@@ -211,6 +211,40 @@ export interface BankDetails {
   AccountType: string;
 }
 
+// Lead management interfaces
+export interface LeadCategory {
+  _id: string;
+  name: string;
+  __v: number;
+}
+
+export interface Lead {
+  _id: string;
+  QuotaionDate: string;
+  StarIcon: boolean;
+  FollowIcon: boolean;
+  AssignPerson: string[];
+  Id: string; // Lead ID like "JBDSL-0001"
+  ClosureDate: string;
+  CompanyName: string;
+  Name: string;
+  Mobile: number;
+  Email: string;
+  Pin: string;
+  Address: string;
+  Department: string;
+  Designation: string;
+  LeadCategory: LeadCategory;
+  Subject: string;
+  State: string;
+  City: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  Stage?: string;
+  Source?: string;
+}
+
 export interface Customer {
   _id: string;
   GstNumber: string;
