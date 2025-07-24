@@ -182,6 +182,9 @@ export const CustomerEmployeeSelector = forwardRef<
       const allEmployees = [...employees, ...tempEmployees];
       const employee = allEmployees.find((emp) => emp._id === employeeId);
 
+      console.log("CustomerEmployeeSelector: Employee selected:", employeeId);
+      console.log("CustomerEmployeeSelector: Found employee:", employee);
+
       if (employee) {
         // For temp employees, create a temporary customer object
         if (employee._id.startsWith("temp_")) {
