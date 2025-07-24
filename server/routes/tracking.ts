@@ -270,6 +270,12 @@ export const addMeetingToHistory: RequestHandler = (req, res) => {
   try {
     const { sessionId, employeeId, meetingDetails } = req.body;
 
+    console.log("Adding meeting to history:", {
+      sessionId,
+      employeeId,
+      meetingDetails,
+    });
+
     if (!sessionId || !employeeId || !meetingDetails) {
       return res.status(400).json({
         error: "Session ID, employee ID, and meeting details are required",
@@ -292,6 +298,9 @@ export const addMeetingToHistory: RequestHandler = (req, res) => {
     };
 
     meetingHistory.push(newHistoryEntry);
+
+    console.log("Meeting history entry added:", newHistoryEntry);
+    console.log("Total meeting history entries:", meetingHistory.length);
 
     res.status(201).json(newHistoryEntry);
   } catch (error) {
