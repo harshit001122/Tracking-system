@@ -324,11 +324,23 @@ export function StartMeetingModal({
               <SearchableSelect
                 value={selectedLead}
                 onValueChange={setSelectedLead}
-                options={leads.map((lead): SearchableSelectOption => ({
-                  value: lead.Id,
-                  label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
-                  searchTerms: [lead.CompanyName, lead.Name, lead.Email, lead.Subject, lead.Stage || ""],
-                }))}
+                options={
+                  Array.isArray(leads)
+                    ? leads
+                        .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
+                        .map((lead): SearchableSelectOption => ({
+                          value: lead.Id,
+                          label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
+                          searchTerms: [
+                            lead.CompanyName,
+                            lead.Name,
+                            lead.Email || "",
+                            lead.Subject || "",
+                            lead.Stage || ""
+                          ].filter(Boolean),
+                        }))
+                    : []
+                }
                 placeholder={
                   loadingLeads ? "Loading leads..." : "Select a lead (optional)"
                 }
