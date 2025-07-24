@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Clock, MapPin, User, Loader2, AlertCircle, FileText } from "lucide-react";
 import { Customer, Lead } from "@shared/api";
-import { SimpleSearchableSelect, SimpleSearchableSelectOption } from "@/components/ui/simple-searchable-select";
+import { BasicSelect, BasicSelectOption } from "@/components/ui/basic-select";
 
 interface StartMeetingModalProps {
   isOpen: boolean;
@@ -263,7 +263,7 @@ export function StartMeetingModal({
               </div>
             ) : (
               <div className="space-y-2">
-                <SimpleSearchableSelect
+                <BasicSelect
                   value={clientName}
                   onValueChange={(value) => {
                     console.log("Client selection changed:", value);
@@ -287,7 +287,7 @@ export function StartMeetingModal({
                               })
                               .map(customer => [customer.CustomerCompanyName.trim(), customer])
                           ).values()
-                        ).map((customer): SimpleSearchableSelectOption => ({
+                        ).map((customer): BasicSelectOption => ({
                           value: customer.CustomerCompanyName.trim(),
                           label: customer.CustomerCompanyName.trim(),
                           searchTerms: [customer.CustomerCompanyName.trim()],
@@ -356,7 +356,7 @@ export function StartMeetingModal({
               <>
                 {/* Use SimpleSearchableSelect to avoid cmdk issues */}
                 {leads && leads.length > 0 ? (
-                  <SimpleSearchableSelect
+                  <BasicSelect
                     value={selectedLead}
                     onValueChange={(value) => {
                       console.log("Lead selection changed:", value);
@@ -385,7 +385,7 @@ export function StartMeetingModal({
                                 })
                                 .map(lead => [lead.Id.trim(), lead])
                             ).values()
-                          ).map((lead): SimpleSearchableSelectOption => ({
+                          ).map((lead): BasicSelectOption => ({
                             value: lead.Id.trim(),
                             label: `${lead.Id.trim()} - ${lead.CompanyName.trim()} (${lead.Name.trim()})`,
                             searchTerms: [
