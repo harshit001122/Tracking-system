@@ -15,6 +15,7 @@ import {
   AlertCircle,
   X,
   Calendar,
+  BarChart3,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Employee, EmployeesResponse } from "@shared/api";
