@@ -113,7 +113,7 @@ export function SearchableSelect({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
-          <Command shouldFilter={false}>
+          <Command shouldFilter={false} value="" onValueChange={() => {}}>
             <CommandInput
               placeholder={searchPlaceholder}
               value={searchValue}
