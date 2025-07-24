@@ -158,6 +158,10 @@ export function EndMeetingModal({
       }));
 
       console.log("EndMeetingModal: Added customer to list:", customerContact);
+
+      // Reset current selection after adding
+      setCurrentSelectedEmployee(null);
+      setCurrentSelectedCustomer(null);
     } else {
       console.log("EndMeetingModal: Customer already in list, skipping");
     }
