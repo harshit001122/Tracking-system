@@ -52,6 +52,12 @@ export function SearchableSelect({
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [hasError, setHasError] = useState(false);
+
+  // Reset error state when options change
+  useEffect(() => {
+    setHasError(false);
+  }, [options]);
 
   // Ensure options is always an array
   const safeOptions = Array.isArray(options) ? options : [];
