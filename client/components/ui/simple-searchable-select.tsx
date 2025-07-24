@@ -103,7 +103,7 @@ export function SimpleSearchableSelect({
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-[300px] p-0" align="start">
         <div className="flex flex-col">
           {/* Search Input */}
           <div className="flex items-center border-b px-3">
