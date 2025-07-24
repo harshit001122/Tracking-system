@@ -283,22 +283,50 @@ export function MeetingHistory({
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                              {meeting.meetingDetails.customerEmail && (
-                                <Badge variant="outline" className="text-xs">
-                                  <Mail className="h-3 w-3 mr-1" />
-                                  {meeting.meetingDetails.customerEmail}
-                                </Badge>
-                              )}
-                              {meeting.meetingDetails.customerMobile && (
-                                <Badge variant="outline" className="text-xs">
-                                  <Phone className="h-3 w-3 mr-1" />
-                                  {meeting.meetingDetails.customerMobile}
-                                </Badge>
-                              )}
-                              {meeting.meetingDetails.customerDepartment && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {meeting.meetingDetails.customerDepartment}
-                                </Badge>
+                              {/* Show contact badges from multiple customers */}
+                              {meeting.meetingDetails.customers && meeting.meetingDetails.customers.length > 0 ? (
+                                meeting.meetingDetails.customers.map((customer, index) => (
+                                  <div key={index} className="flex flex-wrap gap-1">
+                                    {customer.customerEmail && (
+                                      <Badge variant="outline" className="text-xs">
+                                        <Mail className="h-3 w-3 mr-1" />
+                                        {customer.customerEmail}
+                                      </Badge>
+                                    )}
+                                    {customer.customerMobile && (
+                                      <Badge variant="outline" className="text-xs">
+                                        <Phone className="h-3 w-3 mr-1" />
+                                        {customer.customerMobile}
+                                      </Badge>
+                                    )}
+                                    {customer.customerDepartment && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        {customer.customerDepartment}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                /* Fallback to legacy fields */
+                                <>
+                                  {meeting.meetingDetails.customerEmail && (
+                                    <Badge variant="outline" className="text-xs">
+                                      <Mail className="h-3 w-3 mr-1" />
+                                      {meeting.meetingDetails.customerEmail}
+                                    </Badge>
+                                  )}
+                                  {meeting.meetingDetails.customerMobile && (
+                                    <Badge variant="outline" className="text-xs">
+                                      <Phone className="h-3 w-3 mr-1" />
+                                      {meeting.meetingDetails.customerMobile}
+                                    </Badge>
+                                  )}
+                                  {meeting.meetingDetails.customerDepartment && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {meeting.meetingDetails.customerDepartment}
+                                    </Badge>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>
