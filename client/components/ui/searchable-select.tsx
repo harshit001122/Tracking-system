@@ -43,7 +43,7 @@ interface SearchableSelectProps {
 export function SearchableSelect({
   value,
   onValueChange,
-  options,
+  options = [],
   placeholder = "Select an option...",
   emptyMessage = "No options found.",
   disabled = false,
@@ -53,22 +53,29 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  // Ensure options is always an array
+  const safeOptions = Array.isArray(options) ? options : [];
+
   const filteredOptions = useMemo(() => {
-    if (!searchValue) return options;
-    
+    if (!searchValue || safeOptions.length === 0) return safeOptions;
+
     const searchLower = searchValue.toLowerCase();
-    return options.filter((option) => {
+    return safeOptions.filter((option) => {
+      if (!option || typeof option.value !== 'string' || typeof option.label !== 'string') {
+        return false;
+      }
+
       const labelMatch = option.label.toLowerCase().includes(searchLower);
       const valueMatch = option.value.toLowerCase().includes(searchLower);
-      const searchTermsMatch = option.searchTerms?.some(term => 
-        term.toLowerCase().includes(searchLower)
+      const searchTermsMatch = option.searchTerms?.some(term =>
+        term && typeof term === 'string' && term.toLowerCase().includes(searchLower)
       );
-      
+
       return labelMatch || valueMatch || searchTermsMatch;
     });
-  }, [options, searchValue]);
+  }, [safeOptions, searchValue]);
 
-  const selectedOption = options.find((option) => option.value === value);
+  const selectedOption = safeOptions.find((option) => option?.value === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
