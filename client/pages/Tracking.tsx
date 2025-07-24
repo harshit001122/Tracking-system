@@ -220,6 +220,12 @@ export default function Tracking() {
 
         // Add to meeting history (always add, even without tracking session)
         try {
+          console.log("Attempting to add meeting to history with details:", {
+            sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
+            employeeId,
+            meetingDetails,
+          });
+
           const historyResponse = await HttpClient.post(
             "/api/meeting-history",
             {
@@ -230,9 +236,11 @@ export default function Tracking() {
           );
 
           if (historyResponse.ok) {
-            console.log("Meeting added to history successfully");
+            const historyData = await historyResponse.json();
+            console.log("Meeting added to history successfully:", historyData);
           } else {
-            console.error("Failed to add meeting to history");
+            const errorText = await historyResponse.text();
+            console.error("Failed to add meeting to history:", historyResponse.status, errorText);
           }
         } catch (historyError) {
           console.error("Error adding meeting to history:", historyError);
