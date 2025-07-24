@@ -237,6 +237,11 @@ export function EndMeetingModal({
     setIsSubmitting(true);
     try {
       await onEndMeeting(formData);
+      console.log("Meeting ended successfully, clearing temp employees");
+      // Clear temporary employees after successful meeting end
+      if (customerSelectorRef.current) {
+        customerSelectorRef.current.clearTempEmployees();
+      }
       handleClose();
     } catch (error) {
       console.error("Error ending meeting:", error);
@@ -249,6 +254,9 @@ export function EndMeetingModal({
   const handleClose = () => {
     if (isSubmitting || isLoading) return;
 
+    console.log("EndMeetingModal: Closing and resetting all state");
+
+    // Reset all form state
     setFormData({
       customerName: "",
       customerEmployeeName: "",
@@ -262,6 +270,12 @@ export function EndMeetingModal({
     setSelectedCustomerEmployee(null);
     setSelectedCustomer(null);
     setIsAddEmployeeOpen(false);
+
+    // Reset the customer employee selector and clear any temporary employees
+    if (customerSelectorRef.current) {
+      customerSelectorRef.current.resetSelection();
+    }
+
     onClose();
   };
 
