@@ -317,6 +317,8 @@ export const addMeetingToHistory: RequestHandler = (req, res) => {
       employeeId,
       meetingDetails,
       timestamp: new Date().toISOString(),
+      leadId: leadId || undefined,
+      leadInfo: leadInfo || undefined,
     };
 
     meetingHistory.push(newHistoryEntry);
