@@ -8,7 +8,7 @@ import {
 // In-memory storage for demo purposes
 let meetings: MeetingLog[] = [];
 
-let meetingIdCounter = 3;
+let meetingIdCounter = 1;
 
 export const getMeetings: RequestHandler = (req, res) => {
   try {
