@@ -105,9 +105,11 @@ export function SimpleSearchableSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="!w-[var(--radix-popover-trigger-width)] min-w-[300px] p-0"
+        className="!w-[var(--radix-popover-trigger-width)] min-w-[300px] p-0 !z-[1000]"
         align="start"
-        style={{ width: 'var(--radix-popover-trigger-width)', minWidth: '300px' }}
+        style={{ width: 'var(--radix-popover-trigger-width)', minWidth: '300px', zIndex: 1000 }}
+        side="bottom"
+        sideOffset={4}
       >
         <div className="flex flex-col">
           {/* Search Input */}
