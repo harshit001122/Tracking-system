@@ -6,39 +6,9 @@ import {
 } from "@shared/api";
 
 // In-memory storage for demo purposes
-let meetings: MeetingLog[] = [
-  {
-    id: "meeting_001",
-    employeeId: "2",
-    location: {
-      lat: 40.7589,
-      lng: -73.9851,
-      address: "456 Park Ave, New York, NY",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
-    },
-    startTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    clientName: "Tech Solutions Inc",
-    notes: "Equipment installation and setup",
-    status: "in-progress",
-  },
-  {
-    id: "meeting_002",
-    employeeId: "1",
-    location: {
-      lat: 40.7128,
-      lng: -74.006,
-      address: "123 Broadway, New York, NY",
-      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-    },
-    startTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    endTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    clientName: "Acme Corporation",
-    notes: "Quarterly review and contract renewal discussion",
-    status: "completed",
-  },
-];
+let meetings: MeetingLog[] = [];
 
-let meetingIdCounter = 3;
+let meetingIdCounter = 1;
 
 export const getMeetings: RequestHandler = (req, res) => {
   try {
@@ -93,14 +63,15 @@ export const getMeetings: RequestHandler = (req, res) => {
 
 export const createMeeting: RequestHandler = (req, res) => {
   try {
-    const { employeeId, location, clientName, notes }: CreateMeetingRequest =
-      req.body;
+    const { employeeId, location, clientName, notes, leadId, leadInfo } = req.body;
 
     if (!employeeId || !location) {
       return res.status(400).json({
         error: "Employee ID and location are required",
       });
     }
+
+    console.log("Creating meeting with lead info:", { leadId, leadInfo });
 
     const newMeeting: MeetingLog = {
       id: `meeting_${String(meetingIdCounter++).padStart(3, "0")}`,
@@ -113,6 +84,8 @@ export const createMeeting: RequestHandler = (req, res) => {
       clientName,
       notes,
       status: "in-progress",
+      leadId: leadId || undefined,
+      leadInfo: leadInfo || undefined,
     };
 
     meetings.push(newMeeting);

@@ -71,15 +71,28 @@ export interface TrackingSession {
   status: "active" | "completed";
 }
 
-// Enhanced meeting data with customer details
+// Individual customer contact details
+export interface CustomerContact {
+  customerName: string;
+  customerEmployeeName: string;
+  customerEmail?: string;
+  customerMobile?: string;
+  customerDesignation?: string;
+  customerDepartment?: string;
+}
+
+// Enhanced meeting data with multiple customer contacts
 export interface MeetingDetails {
+  customers: CustomerContact[]; // Array of customer contacts
+  discussion: string; // mandatory
+
+  // Legacy fields for backward compatibility
   customerName?: string;
   customerEmployeeName?: string;
   customerEmail?: string;
   customerMobile?: string;
   customerDesignation?: string;
   customerDepartment?: string;
-  discussion: string; // mandatory
 }
 
 export interface MeetingLog {
@@ -92,6 +105,12 @@ export interface MeetingLog {
   notes?: string;
   status: "started" | "in-progress" | "completed";
   trackingSessionId?: string;
+  leadId?: string; // Associated lead ID
+  leadInfo?: {
+    id: string;
+    companyName: string;
+    contactName: string;
+  };
   meetingDetails?: MeetingDetails;
 }
 
@@ -196,6 +215,40 @@ export interface BankDetails {
   BankName: string;
   BranchName: string;
   AccountType: string;
+}
+
+// Lead management interfaces
+export interface LeadCategory {
+  _id: string;
+  name: string;
+  __v: number;
+}
+
+export interface Lead {
+  _id: string;
+  QuotaionDate: string;
+  StarIcon: boolean;
+  FollowIcon: boolean;
+  AssignPerson: string[];
+  Id: string; // Lead ID like "JBDSL-0001"
+  ClosureDate: string;
+  CompanyName: string;
+  Name: string;
+  Mobile: number;
+  Email: string;
+  Pin: string;
+  Address: string;
+  Department: string;
+  Designation: string;
+  LeadCategory: LeadCategory;
+  Subject: string;
+  State: string;
+  City: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  Stage?: string;
+  Source?: string;
 }
 
 export interface Customer {

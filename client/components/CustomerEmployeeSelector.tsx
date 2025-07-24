@@ -26,6 +26,7 @@ export interface CustomerEmployeeSelectorRef {
     customerId: string,
   ) => void;
   clearTempEmployees: () => void;
+  resetSelection: () => void;
 }
 
 export const CustomerEmployeeSelector = forwardRef<
@@ -47,18 +48,7 @@ export const CustomerEmployeeSelector = forwardRef<
     >([]);
     const [tempEmployees, setTempEmployees] = useState<
       Array<CustomerEmployee & { customerName: string; customerId: string }>
-    >(() => {
-      // Load temporary employees from localStorage on initialization
-      try {
-        const stored = localStorage.getItem("tempCustomerEmployees");
-        const loaded = stored ? JSON.parse(stored) : [];
-        console.log("Loading temporary employees from localStorage:", loaded);
-        return loaded;
-      } catch (error) {
-        console.error("Error loading temporary employees:", error);
-        return [];
-      }
-    });
+    >([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -164,6 +154,7 @@ export const CustomerEmployeeSelector = forwardRef<
 
     // Clear temporary employees
     const clearTempEmployees = () => {
+      console.log("Clearing temporary employees");
       setTempEmployees([]);
       try {
         localStorage.removeItem("tempCustomerEmployees");
@@ -172,17 +163,27 @@ export const CustomerEmployeeSelector = forwardRef<
       }
     };
 
+    // Reset selection state
+    const resetSelection = () => {
+      console.log("Resetting customer employee selection");
+      clearTempEmployees();
+    };
+
     // Expose refresh function and addTempEmployee via ref
     useImperativeHandle(ref, () => ({
       refreshCustomers: fetchCustomers,
       addTempEmployee,
       clearTempEmployees,
+      resetSelection,
     }));
 
     const handleEmployeeSelect = (employeeId: string) => {
       // Combine regular and temporary employees
       const allEmployees = [...employees, ...tempEmployees];
       const employee = allEmployees.find((emp) => emp._id === employeeId);
+
+      console.log("CustomerEmployeeSelector: Employee selected:", employeeId);
+      console.log("CustomerEmployeeSelector: Found employee:", employee);
 
       if (employee) {
         // For temp employees, create a temporary customer object
@@ -231,12 +232,16 @@ export const CustomerEmployeeSelector = forwardRef<
             updatedAt: new Date().toISOString(),
             __v: 0,
           };
+          console.log("CustomerEmployeeSelector: Calling onEmployeeSelect for temp employee:", employee.CustomerEmpName, tempCustomer.CustomerCompanyName);
           onEmployeeSelect(employee, tempCustomer);
         } else {
           // For regular employees, find the actual customer
           const customer = customers.find((c) => c._id === employee.customerId);
           if (customer) {
+            console.log("CustomerEmployeeSelector: Calling onEmployeeSelect for regular employee:", employee.CustomerEmpName, customer.CustomerCompanyName);
             onEmployeeSelect(employee, customer);
+          } else {
+            console.error("CustomerEmployeeSelector: Customer not found for employee:", employee);
           }
         }
       }

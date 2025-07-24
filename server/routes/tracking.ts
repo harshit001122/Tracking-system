@@ -17,57 +17,8 @@ let meetingHistory: Array<{
   employeeId: string;
   meetingDetails: MeetingDetails;
   timestamp: string;
-}> = [
-  {
-    id: "history_001",
-    sessionId: "session_001",
-    employeeId: "67daa55d9c4abb36045d5bfe",
-    meetingDetails: {
-      customerName: "Tech Corp Ltd",
-      customerEmployeeName: "John Smith",
-      customerEmail: "john.smith@techcorp.com",
-      customerMobile: "+1-555-0123",
-      customerDesignation: "CTO",
-      customerDepartment: "Technology",
-      discussion:
-        "Discussed implementation of new cloud infrastructure. Client is interested in migrating their current setup to AWS. Next steps include providing a detailed proposal and cost estimate.",
-    },
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-  },
-  {
-    id: "history_002",
-    sessionId: "session_002",
-    employeeId: "67daa55d9c4abb36045d5bfe",
-    meetingDetails: {
-      customerName: "Global Industries",
-      customerEmployeeName: "Sarah Johnson",
-      customerEmail: "s.johnson@global.com",
-      customerMobile: "+1-555-0456",
-      customerDesignation: "Operations Manager",
-      customerDepartment: "Operations",
-      discussion:
-        "Reviewed quarterly performance metrics. Discussed optimization strategies for their supply chain. Client requested a follow-up meeting next week to present our recommendations.",
-    },
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-  },
-  {
-    id: "history_003",
-    sessionId: "session_003",
-    employeeId: "67daa55d9c4abb36045d5bfe",
-    meetingDetails: {
-      customerName: "StartupX",
-      customerEmployeeName: "Mike Chen",
-      customerEmail: "mike@startupx.io",
-      customerMobile: "+1-555-0789",
-      customerDesignation: "Founder & CEO",
-      customerDepartment: "Executive",
-      discussion:
-        "Initial consultation for digital transformation project. Startup needs help modernizing their legacy systems. Very promising opportunity with potential for long-term partnership.",
-    },
-    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-  },
-];
-let historyIdCounter = 4;
+}> = [];
+let historyIdCounter = 1;
 
 export const getTrackingSessions: RequestHandler = (req, res) => {
   try {
@@ -317,7 +268,15 @@ export const getMeetingHistory: RequestHandler = (req, res) => {
 
 export const addMeetingToHistory: RequestHandler = (req, res) => {
   try {
-    const { sessionId, employeeId, meetingDetails } = req.body;
+    const { sessionId, employeeId, meetingDetails, leadId, leadInfo } = req.body;
+
+    console.log("Adding meeting to history:", {
+      sessionId,
+      employeeId,
+      meetingDetails,
+      leadId,
+      leadInfo,
+    });
 
     if (!sessionId || !employeeId || !meetingDetails) {
       return res.status(400).json({
@@ -332,15 +291,40 @@ export const addMeetingToHistory: RequestHandler = (req, res) => {
       });
     }
 
+    // Validate customers array or legacy customer fields
+    if (!meetingDetails.customers || meetingDetails.customers.length === 0) {
+      // Check if legacy fields are provided for backward compatibility
+      if (!meetingDetails.customerName || !meetingDetails.customerEmployeeName) {
+        return res.status(400).json({
+          error: "At least one customer contact is required",
+        });
+      }
+
+      // Convert legacy fields to new format
+      meetingDetails.customers = [{
+        customerName: meetingDetails.customerName,
+        customerEmployeeName: meetingDetails.customerEmployeeName,
+        customerEmail: meetingDetails.customerEmail || "",
+        customerMobile: meetingDetails.customerMobile || "",
+        customerDesignation: meetingDetails.customerDesignation || "",
+        customerDepartment: meetingDetails.customerDepartment || "",
+      }];
+    }
+
     const newHistoryEntry = {
       id: `history_${String(historyIdCounter++).padStart(3, "0")}`,
       sessionId,
       employeeId,
       meetingDetails,
       timestamp: new Date().toISOString(),
+      leadId: leadId || undefined,
+      leadInfo: leadInfo || undefined,
     };
 
     meetingHistory.push(newHistoryEntry);
+
+    console.log("Meeting history entry added:", newHistoryEntry);
+    console.log("Total meeting history entries:", meetingHistory.length);
 
     res.status(201).json(newHistoryEntry);
   } catch (error) {

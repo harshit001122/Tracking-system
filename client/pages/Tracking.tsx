@@ -220,19 +220,34 @@ export default function Tracking() {
 
         // Add to meeting history (always add, even without tracking session)
         try {
+          // Get the current meeting data to extract lead information
+          const currentMeeting = meetings.find(m => m.id === activeMeetingId);
+
+          console.log("Attempting to add meeting to history with details:", {
+            sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
+            employeeId,
+            meetingDetails,
+            leadId: currentMeeting?.leadId,
+            leadInfo: currentMeeting?.leadInfo,
+          });
+
           const historyResponse = await HttpClient.post(
             "/api/meeting-history",
             {
               sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
               employeeId,
               meetingDetails,
+              leadId: currentMeeting?.leadId,
+              leadInfo: currentMeeting?.leadInfo,
             },
           );
 
           if (historyResponse.ok) {
-            console.log("Meeting added to history successfully");
+            const historyData = await historyResponse.json();
+            console.log("Meeting added to history successfully:", historyData);
           } else {
-            console.error("Failed to add meeting to history");
+            const errorText = await historyResponse.text();
+            console.error("Failed to add meeting to history:", historyResponse.status, errorText);
           }
         } catch (historyError) {
           console.error("Error adding meeting to history:", historyError);
@@ -277,6 +292,12 @@ export default function Tracking() {
     clientName: string;
     reason: string;
     notes: string;
+    leadId?: string;
+    leadInfo?: {
+      id: string;
+      companyName: string;
+      contactName: string;
+    };
   }) => {
     if (!employee) return;
 
@@ -291,6 +312,8 @@ export default function Tracking() {
         },
         clientName: meetingData.clientName,
         notes: `${meetingData.reason}${meetingData.notes ? ` - ${meetingData.notes}` : ""}`,
+        leadId: meetingData.leadId,
+        leadInfo: meetingData.leadInfo,
       });
 
       if (response.ok) {

@@ -25,6 +25,7 @@ import {
   ChevronRight,
   FileText,
   Filter,
+  Target,
 } from "lucide-react";
 
 interface MeetingHistoryEntry {
@@ -33,6 +34,12 @@ interface MeetingHistoryEntry {
   employeeId: string;
   meetingDetails: MeetingDetails;
   timestamp: string;
+  leadId?: string;
+  leadInfo?: {
+    id: string;
+    companyName: string;
+    contactName: string;
+  };
 }
 
 interface MeetingHistoryResponse {
@@ -83,6 +90,7 @@ export function MeetingHistory({
         params.append("employeeId", employeeId);
       }
 
+      console.log("Fetching meeting history for employee:", employeeId);
       const response = await HttpClient.get(
         `/api/meeting-history?${params.toString()}`,
       );
@@ -90,14 +98,23 @@ export function MeetingHistory({
       if (response.ok) {
         const data: MeetingHistoryResponse = await response.json();
         console.log("Meeting history data received:", data);
-        setMeetings(data.meetings);
-        setTotal(data.total);
-        setTotalPages(data.totalPages);
+        console.log("Number of meetings:", data.meetings?.length || 0);
+        if (data.meetings?.length > 0) {
+          console.log("First meeting details:", data.meetings[0]);
+          console.log("First meeting's meetingDetails:", data.meetings[0].meetingDetails);
+          console.log("Customer name:", data.meetings[0].meetingDetails?.customerName);
+          console.log("Customer employee name:", data.meetings[0].meetingDetails?.customerEmployeeName);
+        }
+        setMeetings(data.meetings || []);
+        setTotal(data.total || 0);
+        setTotalPages(data.totalPages || 1);
       } else {
+        const errorText = await response.text();
         console.error(
           "Failed to fetch meeting history:",
           response.status,
           response.statusText,
+          errorText
         );
       }
     } catch (error) {
@@ -220,35 +237,58 @@ export function MeetingHistory({
                                   {formatDate(meeting.timestamp)}
                                 </span>
                               </div>
-                              {meeting.meetingDetails.customerName && (
+                              {meeting.leadInfo && (
                                 <div className="flex items-center space-x-2">
-                                  <Building className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm font-medium">
-                                    {meeting.meetingDetails.customerName}
+                                  <Target className="h-4 w-4 text-blue-500" />
+                                  <span className="text-sm font-medium text-blue-600">
+                                    Lead: {meeting.leadInfo.id}
                                   </span>
                                 </div>
                               )}
-                            </div>
-
-                            {meeting.meetingDetails.customerEmployeeName && (
-                              <div className="flex items-center space-x-2">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                  {meeting.meetingDetails.customerEmployeeName}
-                                  {meeting.meetingDetails
-                                    .customerDesignation && (
-                                    <span className="text-muted-foreground ml-1">
-                                      (
-                                      {
-                                        meeting.meetingDetails
-                                          .customerDesignation
-                                      }
-                                      )
+                              {/* Display multiple customers */}
+                              {meeting.meetingDetails.customers && meeting.meetingDetails.customers.length > 0 ? (
+                                <div className="space-y-1">
+                                  <div className="flex items-center space-x-2">
+                                    <Building className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm font-medium">
+                                      Customers ({meeting.meetingDetails.customers.length})
                                     </span>
-                                  )}
-                                </span>
-                              </div>
-                            )}
+                                  </div>
+                                  {meeting.meetingDetails.customers.map((customer, index) => (
+                                    <div key={index} className="ml-6 text-sm">
+                                      <div className="font-medium">{customer.customerName}</div>
+                                      <div className="text-muted-foreground">
+                                        Contact: {customer.customerEmployeeName}
+                                        {customer.customerDesignation && (
+                                          <span> ({customer.customerDesignation})</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                /* Fallback to legacy fields for backward compatibility */
+                                <div className="space-y-1">
+                                  <div className="flex items-center space-x-2">
+                                    <Building className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm font-medium">
+                                      {meeting.meetingDetails.customerName || "Unknown Company"}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-2 ml-6">
+                                    <User className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm">
+                                      {meeting.meetingDetails.customerEmployeeName || "No contact person"}
+                                      {meeting.meetingDetails.customerDesignation && (
+                                        <span className="text-muted-foreground ml-1">
+                                          ({meeting.meetingDetails.customerDesignation})
+                                        </span>
+                                      )}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
 
                             <div className="flex items-start space-x-2">
                               <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5" />
@@ -258,22 +298,50 @@ export function MeetingHistory({
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                              {meeting.meetingDetails.customerEmail && (
-                                <Badge variant="outline" className="text-xs">
-                                  <Mail className="h-3 w-3 mr-1" />
-                                  {meeting.meetingDetails.customerEmail}
-                                </Badge>
-                              )}
-                              {meeting.meetingDetails.customerMobile && (
-                                <Badge variant="outline" className="text-xs">
-                                  <Phone className="h-3 w-3 mr-1" />
-                                  {meeting.meetingDetails.customerMobile}
-                                </Badge>
-                              )}
-                              {meeting.meetingDetails.customerDepartment && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {meeting.meetingDetails.customerDepartment}
-                                </Badge>
+                              {/* Show contact badges from multiple customers */}
+                              {meeting.meetingDetails.customers && meeting.meetingDetails.customers.length > 0 ? (
+                                meeting.meetingDetails.customers.map((customer, index) => (
+                                  <div key={index} className="flex flex-wrap gap-1">
+                                    {customer.customerEmail && (
+                                      <Badge variant="outline" className="text-xs">
+                                        <Mail className="h-3 w-3 mr-1" />
+                                        {customer.customerEmail}
+                                      </Badge>
+                                    )}
+                                    {customer.customerMobile && (
+                                      <Badge variant="outline" className="text-xs">
+                                        <Phone className="h-3 w-3 mr-1" />
+                                        {customer.customerMobile}
+                                      </Badge>
+                                    )}
+                                    {customer.customerDepartment && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        {customer.customerDepartment}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                /* Fallback to legacy fields */
+                                <>
+                                  {meeting.meetingDetails.customerEmail && (
+                                    <Badge variant="outline" className="text-xs">
+                                      <Mail className="h-3 w-3 mr-1" />
+                                      {meeting.meetingDetails.customerEmail}
+                                    </Badge>
+                                  )}
+                                  {meeting.meetingDetails.customerMobile && (
+                                    <Badge variant="outline" className="text-xs">
+                                      <Phone className="h-3 w-3 mr-1" />
+                                      {meeting.meetingDetails.customerMobile}
+                                    </Badge>
+                                  )}
+                                  {meeting.meetingDetails.customerDepartment && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {meeting.meetingDetails.customerDepartment}
+                                    </Badge>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>
@@ -342,69 +410,143 @@ export function MeetingHistory({
             </DialogHeader>
 
             <div className="space-y-4">
-              {selectedMeeting.meetingDetails.customerName && (
+              {/* Display multiple customers or fallback to legacy */}
+              {selectedMeeting.meetingDetails.customers && selectedMeeting.meetingDetails.customers.length > 0 ? (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">
-                    Customer Name
+                    Customer Contacts ({selectedMeeting.meetingDetails.customers.length})
                   </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerName}
-                  </p>
+                  <div className="space-y-3 mt-2">
+                    {selectedMeeting.meetingDetails.customers.map((customer, index) => (
+                      <div key={index} className="p-3 bg-muted/20 rounded-md space-y-2">
+                        <div>
+                          <span className="text-sm font-medium">{customer.customerName}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Contact:</span>
+                            <p>{customer.customerEmployeeName}</p>
+                          </div>
+                          {customer.customerDesignation && (
+                            <div>
+                              <span className="text-muted-foreground">Position:</span>
+                              <p>{customer.customerDesignation}</p>
+                            </div>
+                          )}
+                          {customer.customerDepartment && (
+                            <div>
+                              <span className="text-muted-foreground">Department:</span>
+                              <p>{customer.customerDepartment}</p>
+                            </div>
+                          )}
+                          {customer.customerEmail && (
+                            <div>
+                              <span className="text-muted-foreground">Email:</span>
+                              <p>{customer.customerEmail}</p>
+                            </div>
+                          )}
+                          {customer.customerMobile && (
+                            <div>
+                              <span className="text-muted-foreground">Mobile:</span>
+                              <p>{customer.customerMobile}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              ) : (
+                /* Fallback to legacy single customer display */
+                <>
+                  {selectedMeeting.meetingDetails.customerName && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Customer Name
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerName}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedMeeting.meetingDetails.customerEmployeeName && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Contact Person
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerEmployeeName}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedMeeting.meetingDetails.customerEmail && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Email
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerEmail}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedMeeting.meetingDetails.customerMobile && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Mobile
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerMobile}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedMeeting.meetingDetails.customerDesignation && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Designation
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerDesignation}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedMeeting.meetingDetails.customerDepartment && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Department
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerDepartment}
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
 
-              {selectedMeeting.meetingDetails.customerEmployeeName && (
+              {/* Lead Information */}
+              {selectedMeeting.leadInfo && (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">
-                    Contact Person
+                    Associated Lead
                   </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerEmployeeName}
-                  </p>
-                </div>
-              )}
-
-              {selectedMeeting.meetingDetails.customerEmail && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Email
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerEmail}
-                  </p>
-                </div>
-              )}
-
-              {selectedMeeting.meetingDetails.customerMobile && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Mobile
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerMobile}
-                  </p>
-                </div>
-              )}
-
-              {selectedMeeting.meetingDetails.customerDesignation && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Designation
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerDesignation}
-                  </p>
-                </div>
-              )}
-
-              {selectedMeeting.meetingDetails.customerDepartment && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Department
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerDepartment}
-                  </p>
+                  <div className="p-3 bg-blue-50 rounded-md mt-2 space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Target className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm font-medium text-blue-700">
+                        Lead ID: {selectedMeeting.leadInfo.id}
+                      </span>
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      Company: {selectedMeeting.leadInfo.companyName}
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      Contact: {selectedMeeting.leadInfo.contactName}
+                    </div>
+                  </div>
                 </div>
               )}
 
