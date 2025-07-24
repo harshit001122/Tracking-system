@@ -82,7 +82,13 @@ export function SimpleSearchableSelect({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(newOpen) => {
+      console.log("Popover state changing:", { from: open, to: newOpen });
+      setOpen(newOpen);
+      if (!newOpen) {
+        setSearchValue("");
+      }
+    }}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -90,6 +96,9 @@ export function SimpleSearchableSelect({
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
           disabled={disabled}
+          onClick={(e) => {
+            console.log("Trigger clicked, current state:", { open, disabled, optionsCount: safeOptions.length });
+          }}
         >
           {selectedOption ? selectedOption.label : placeholder}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -127,7 +136,12 @@ export function SimpleSearchableSelect({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      console.log("Option clicked:", option.value, option.label);
                       handleSelect(option.value);
+                    }}
+                    onMouseDown={(e) => {
+                      // Prevent the click from being lost
+                      e.preventDefault();
                     }}
                     role="option"
                     aria-selected={value === option.value}
