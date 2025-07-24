@@ -88,63 +88,83 @@ export function SearchableSelect({
     return null;
   }
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={cn("w-full justify-between", className)}
-          disabled={disabled}
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onValueChange={setSearchValue}
-          />
-          <CommandEmpty>{emptyMessage}</CommandEmpty>
-          <CommandGroup className="max-h-64 overflow-y-auto">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                option && option.value && option.label ? (
-                  <CommandItem
-                    key={option.value}
-                    value={option.value}
-                    onSelect={(currentValue) => {
-                      try {
-                        onValueChange(currentValue === value ? "" : currentValue);
-                        setOpen(false);
-                        setSearchValue("");
-                      } catch (error) {
-                        console.error("Error in SearchableSelect onSelect:", error);
-                      }
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === option.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {option.label}
-                  </CommandItem>
-                ) : null
-              ))
-            ) : (
-              <CommandItem disabled>
-                {emptyMessage}
-              </CommandItem>
-            )}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
+  // Error fallback UI
+  if (hasError) {
+    return (
+      <div className={cn("w-full p-2 border border-destructive rounded-md text-sm text-destructive", className)}>
+        Error loading options. Please try again.
+      </div>
+    );
+  }
+
+  try {
+    return (
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className={cn("w-full justify-between", className)}
+            disabled={disabled}
+          >
+            {selectedOption ? selectedOption.label : placeholder}
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command shouldFilter={false}>
+            <CommandInput
+              placeholder={searchPlaceholder}
+              value={searchValue}
+              onValueChange={setSearchValue}
+            />
+            <CommandEmpty>{emptyMessage}</CommandEmpty>
+            <CommandGroup className="max-h-64 overflow-y-auto">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option) => (
+                  option && option.value && option.label ? (
+                    <CommandItem
+                      key={option.value}
+                      value={option.value}
+                      onSelect={(currentValue) => {
+                        try {
+                          onValueChange(currentValue === value ? "" : currentValue);
+                          setOpen(false);
+                          setSearchValue("");
+                        } catch (error) {
+                          console.error("Error in SearchableSelect onSelect:", error);
+                          setHasError(true);
+                        }
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === option.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {option.label}
+                    </CommandItem>
+                  ) : null
+                ))
+              ) : (
+                <CommandItem disabled>
+                  {emptyMessage}
+                </CommandItem>
+              )}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    );
+  } catch (error) {
+    console.error("Error rendering SearchableSelect:", error);
+    setHasError(true);
+    return (
+      <div className={cn("w-full p-2 border border-destructive rounded-md text-sm text-destructive", className)}>
+        Error loading options. Please try again.
+      </div>
+    );
+  }
 }
