@@ -237,6 +237,14 @@ export function MeetingHistory({
                                   {formatDate(meeting.timestamp)}
                                 </span>
                               </div>
+                              {meeting.leadInfo && (
+                                <div className="flex items-center space-x-2">
+                                  <Target className="h-4 w-4 text-blue-500" />
+                                  <span className="text-sm font-medium text-blue-600">
+                                    Lead: {meeting.leadInfo.id}
+                                  </span>
+                                </div>
+                              )}
                               {/* Display multiple customers */}
                               {meeting.meetingDetails.customers && meeting.meetingDetails.customers.length > 0 ? (
                                 <div className="space-y-1">
