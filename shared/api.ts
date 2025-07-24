@@ -105,6 +105,12 @@ export interface MeetingLog {
   notes?: string;
   status: "started" | "in-progress" | "completed";
   trackingSessionId?: string;
+  leadId?: string; // Associated lead ID
+  leadInfo?: {
+    id: string;
+    companyName: string;
+    contactName: string;
+  };
   meetingDetails?: MeetingDetails;
 }
 
