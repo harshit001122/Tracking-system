@@ -193,6 +193,22 @@ export default function Tracking() {
     setIsEndMeetingModalOpen(true);
   };
 
+  const handleEndMeetingAttempt = () => {
+    console.log("End meeting attempt. Employee status:", employee?.status, "Available meetings:", meetings);
+
+    // Find the active meeting for this employee
+    const activeMeeting = meetings.find(
+      (meeting) => meeting.status === "in-progress",
+    );
+
+    if (activeMeeting) {
+      handleEndMeetingClick(activeMeeting.id);
+    } else {
+      console.error("No active meeting found to end. Available meetings:", meetings);
+      alert("No active meeting found for this employee. Please start a meeting first.");
+    }
+  };
+
   const handleEndMeetingWithDetails = async (
     meetingDetails: MeetingDetails,
   ) => {
