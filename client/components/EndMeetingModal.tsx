@@ -230,7 +230,12 @@ export function EndMeetingModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("EndMeetingModal: Form data before validation:", formData);
+    console.log("EndMeetingModal: Selected customer employee:", selectedCustomerEmployee);
+    console.log("EndMeetingModal: Selected customer:", selectedCustomer);
+
     if (!validateForm()) {
+      console.log("EndMeetingModal: Form validation failed");
       return;
     }
 
