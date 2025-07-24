@@ -527,6 +527,29 @@ export function MeetingHistory({
                 </>
               )}
 
+              {/* Lead Information */}
+              {selectedMeeting.leadInfo && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Associated Lead
+                  </label>
+                  <div className="p-3 bg-blue-50 rounded-md mt-2 space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Target className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm font-medium text-blue-700">
+                        Lead ID: {selectedMeeting.leadInfo.id}
+                      </span>
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      Company: {selectedMeeting.leadInfo.companyName}
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      Contact: {selectedMeeting.leadInfo.contactName}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="text-sm font-medium text-muted-foreground">
                   Discussion
