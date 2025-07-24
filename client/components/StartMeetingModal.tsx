@@ -322,16 +322,16 @@ export function StartMeetingModal({
               </div>
             ) : (
               <>
-                {/* Try SearchableSelect first, fallback to regular Select if error */}
+                {/* Use SimpleSearchableSelect to avoid cmdk issues */}
                 {leads && leads.length > 0 ? (
-                  <SearchableSelect
+                  <SimpleSearchableSelect
                     value={selectedLead}
                     onValueChange={setSelectedLead}
                     options={
                       Array.isArray(leads)
                         ? leads
                             .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
-                            .map((lead): SearchableSelectOption => ({
+                            .map((lead): SimpleSearchableSelectOption => ({
                               value: lead.Id,
                               label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
                               searchTerms: [
