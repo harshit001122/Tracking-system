@@ -108,10 +108,10 @@ export function SimpleSearchableSelect({
           {/* Options List */}
           <div className="max-h-64 overflow-y-auto">
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
+              filteredOptions.map((option, index) => (
                 option && option.value && option.label ? (
                   <div
-                    key={option.value}
+                    key={`${option.value}-${index}`}
                     className={cn(
                       "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
                       "cursor-pointer"
