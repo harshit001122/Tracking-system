@@ -424,7 +424,13 @@ export function EndMeetingModal({
           </div>
         </form>
 
-
+        {/* Add Customer Employee Modal */}
+        <AddCustomerEmployeeModal
+          isOpen={isAddEmployeeOpen}
+          onClose={() => setIsAddEmployeeOpen(false)}
+          onAddEmployee={handleAddNewEmployee}
+          isLoading={isLoading}
+        />
       </DialogContent>
     </Dialog>
   );
