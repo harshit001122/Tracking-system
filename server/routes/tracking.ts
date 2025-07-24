@@ -268,12 +268,14 @@ export const getMeetingHistory: RequestHandler = (req, res) => {
 
 export const addMeetingToHistory: RequestHandler = (req, res) => {
   try {
-    const { sessionId, employeeId, meetingDetails } = req.body;
+    const { sessionId, employeeId, meetingDetails, leadId, leadInfo } = req.body;
 
     console.log("Adding meeting to history:", {
       sessionId,
       employeeId,
       meetingDetails,
+      leadId,
+      leadInfo,
     });
 
     if (!sessionId || !employeeId || !meetingDetails) {
