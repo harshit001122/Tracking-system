@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
+import { MeetingDetails, CustomerEmployee, Customer, CustomerContact } from "@shared/api";
 import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
 import {
   CustomerEmployeeSelector,
@@ -37,24 +37,26 @@ export function EndMeetingModal({
   isLoading = false,
 }: EndMeetingModalProps) {
   const [formData, setFormData] = useState<MeetingDetails>({
+    customers: [],
+    discussion: "",
+    // Legacy fields for backward compatibility
     customerName: "",
     customerEmployeeName: "",
     customerEmail: "",
     customerMobile: "",
     customerDesignation: "",
     customerDepartment: "",
-    discussion: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Customer employee selection state
-  const [selectedCustomerEmployee, setSelectedCustomerEmployee] =
+  // Multiple customer selection state
+  const [selectedCustomers, setSelectedCustomers] = useState<CustomerContact[]>([]);
+  const [currentSelectedEmployee, setCurrentSelectedEmployee] =
     useState<CustomerEmployee | null>(null);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null,
-  );
+  const [currentSelectedCustomer, setCurrentSelectedCustomer] =
+    useState<Customer | null>(null);
   const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
 
   // Ref for customer employee selector
