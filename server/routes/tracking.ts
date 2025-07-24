@@ -17,56 +17,7 @@ let meetingHistory: Array<{
   employeeId: string;
   meetingDetails: MeetingDetails;
   timestamp: string;
-}> = [
-  {
-    id: "history_001",
-    sessionId: "session_001",
-    employeeId: "67daa55d9c4abb36045d5bfe",
-    meetingDetails: {
-      customerName: "Tech Corp Ltd",
-      customerEmployeeName: "John Smith",
-      customerEmail: "john.smith@techcorp.com",
-      customerMobile: "+1-555-0123",
-      customerDesignation: "CTO",
-      customerDepartment: "Technology",
-      discussion:
-        "Discussed implementation of new cloud infrastructure. Client is interested in migrating their current setup to AWS. Next steps include providing a detailed proposal and cost estimate.",
-    },
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-  },
-  {
-    id: "history_002",
-    sessionId: "session_002",
-    employeeId: "67daa55d9c4abb36045d5bfe",
-    meetingDetails: {
-      customerName: "Global Industries",
-      customerEmployeeName: "Sarah Johnson",
-      customerEmail: "s.johnson@global.com",
-      customerMobile: "+1-555-0456",
-      customerDesignation: "Operations Manager",
-      customerDepartment: "Operations",
-      discussion:
-        "Reviewed quarterly performance metrics. Discussed optimization strategies for their supply chain. Client requested a follow-up meeting next week to present our recommendations.",
-    },
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-  },
-  {
-    id: "history_003",
-    sessionId: "session_003",
-    employeeId: "67daa55d9c4abb36045d5bfe",
-    meetingDetails: {
-      customerName: "StartupX",
-      customerEmployeeName: "Mike Chen",
-      customerEmail: "mike@startupx.io",
-      customerMobile: "+1-555-0789",
-      customerDesignation: "Founder & CEO",
-      customerDepartment: "Executive",
-      discussion:
-        "Initial consultation for digital transformation project. Startup needs help modernizing their legacy systems. Very promising opportunity with potential for long-term partnership.",
-    },
-    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-  },
-];
+}> = [];
 let historyIdCounter = 4;
 
 export const getTrackingSessions: RequestHandler = (req, res) => {
