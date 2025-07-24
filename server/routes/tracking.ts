@@ -289,6 +289,26 @@ export const addMeetingToHistory: RequestHandler = (req, res) => {
       });
     }
 
+    // Validate customers array or legacy customer fields
+    if (!meetingDetails.customers || meetingDetails.customers.length === 0) {
+      // Check if legacy fields are provided for backward compatibility
+      if (!meetingDetails.customerName || !meetingDetails.customerEmployeeName) {
+        return res.status(400).json({
+          error: "At least one customer contact is required",
+        });
+      }
+
+      // Convert legacy fields to new format
+      meetingDetails.customers = [{
+        customerName: meetingDetails.customerName,
+        customerEmployeeName: meetingDetails.customerEmployeeName,
+        customerEmail: meetingDetails.customerEmail || "",
+        customerMobile: meetingDetails.customerMobile || "",
+        customerDesignation: meetingDetails.customerDesignation || "",
+        customerDepartment: meetingDetails.customerDepartment || "",
+      }];
+    }
+
     const newHistoryEntry = {
       id: `history_${String(historyIdCounter++).padStart(3, "0")}`,
       sessionId,
