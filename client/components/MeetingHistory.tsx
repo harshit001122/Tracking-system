@@ -94,6 +94,9 @@ export function MeetingHistory({
         console.log("Number of meetings:", data.meetings?.length || 0);
         if (data.meetings?.length > 0) {
           console.log("First meeting details:", data.meetings[0]);
+          console.log("First meeting's meetingDetails:", data.meetings[0].meetingDetails);
+          console.log("Customer name:", data.meetings[0].meetingDetails?.customerName);
+          console.log("Customer employee name:", data.meetings[0].meetingDetails?.customerEmployeeName);
         }
         setMeetings(data.meetings || []);
         setTotal(data.total || 0);
