@@ -331,19 +331,23 @@ export function StartMeetingModal({
                     onValueChange={setSelectedLead}
                     options={
                       Array.isArray(leads)
-                        ? leads
-                            .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
-                            .map((lead): SimpleSearchableSelectOption => ({
-                              value: lead.Id,
-                              label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
-                              searchTerms: [
-                                lead.CompanyName,
-                                lead.Name,
-                                lead.Email || "",
-                                lead.Subject || "",
-                                lead.Stage || ""
-                              ].filter(Boolean),
-                            }))
+                        ? Array.from(
+                            new Map(
+                              leads
+                                .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
+                                .map(lead => [lead.Id, lead])
+                            ).values()
+                          ).map((lead): SimpleSearchableSelectOption => ({
+                            value: lead.Id,
+                            label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
+                            searchTerms: [
+                              lead.CompanyName,
+                              lead.Name,
+                              lead.Email || "",
+                              lead.Subject || "",
+                              lead.Stage || ""
+                            ].filter(Boolean),
+                          }))
                         : []
                     }
                     placeholder={
