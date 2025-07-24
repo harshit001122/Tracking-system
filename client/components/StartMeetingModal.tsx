@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, MapPin, User } from "lucide-react";
+import { Clock, MapPin, User, Loader2, AlertCircle } from "lucide-react";
+import { Customer } from "@shared/api";
 
 interface StartMeetingModalProps {
   isOpen: boolean;
@@ -33,19 +34,7 @@ interface StartMeetingModalProps {
   isLoading?: boolean;
 }
 
-// Common client names for quick selection
-const COMMON_CLIENTS = [
-  "Acme Corporation",
-  "Tech Solutions Inc",
-  "Global Industries",
-  "Metro Services",
-  "Prime Solutions",
-  "Digital Systems",
-  "Enterprise Corp",
-  "Future Tech",
-  "Advanced Solutions",
-  "Professional Services",
-];
+
 
 // Meeting reasons/types
 const MEETING_REASONS = [
