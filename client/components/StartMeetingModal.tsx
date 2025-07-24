@@ -254,18 +254,23 @@ export function StartMeetingModal({
                 value={clientName}
                 onValueChange={setClientName}
                 options={[
-                  // Regular customers (deduplicated)
+                  // Regular customers (deduplicated with better validation)
                   ...(Array.isArray(customers)
                     ? Array.from(
                         new Map(
                           customers
-                            .filter(customer => customer && customer.CustomerCompanyName)
-                            .map(customer => [customer.CustomerCompanyName, customer])
+                            .filter(customer =>
+                              customer &&
+                              customer.CustomerCompanyName &&
+                              typeof customer.CustomerCompanyName === 'string' &&
+                              customer.CustomerCompanyName.trim().length > 0
+                            )
+                            .map(customer => [customer.CustomerCompanyName.trim(), customer])
                         ).values()
                       ).map((customer): SimpleSearchableSelectOption => ({
-                        value: customer.CustomerCompanyName,
-                        label: customer.CustomerCompanyName,
-                        searchTerms: [customer.CustomerCompanyName],
+                        value: customer.CustomerCompanyName.trim(),
+                        label: customer.CustomerCompanyName.trim(),
+                        searchTerms: [customer.CustomerCompanyName.trim()],
                       }))
                     : []
                   ),
@@ -334,19 +339,31 @@ export function StartMeetingModal({
                         ? Array.from(
                             new Map(
                               leads
-                                .filter(lead => lead && lead.Id && lead.CompanyName && lead.Name)
-                                .map(lead => [lead.Id, lead])
+                                .filter(lead =>
+                                  lead &&
+                                  lead.Id &&
+                                  lead.CompanyName &&
+                                  lead.Name &&
+                                  typeof lead.Id === 'string' &&
+                                  typeof lead.CompanyName === 'string' &&
+                                  typeof lead.Name === 'string' &&
+                                  lead.Id.trim().length > 0 &&
+                                  lead.CompanyName.trim().length > 0 &&
+                                  lead.Name.trim().length > 0
+                                )
+                                .map(lead => [lead.Id.trim(), lead])
                             ).values()
                           ).map((lead): SimpleSearchableSelectOption => ({
-                            value: lead.Id,
-                            label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
+                            value: lead.Id.trim(),
+                            label: `${lead.Id.trim()} - ${lead.CompanyName.trim()} (${lead.Name.trim()})`,
                             searchTerms: [
-                              lead.CompanyName,
-                              lead.Name,
+                              lead.CompanyName.trim(),
+                              lead.Name.trim(),
                               lead.Email || "",
                               lead.Subject || "",
-                              lead.Stage || ""
-                            ].filter(Boolean),
+                              lead.Stage || "",
+                              lead.Id.trim()
+                            ].filter(term => term && term.length > 0),
                           }))
                         : []
                     }
