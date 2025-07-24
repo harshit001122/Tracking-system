@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Clock, MapPin, User, Loader2, AlertCircle, FileText } from "lucide-react";
 import { Customer, Lead } from "@shared/api";
-import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
+import { SimpleSearchableSelect, SimpleSearchableSelectOption } from "@/components/ui/simple-searchable-select";
 
 interface StartMeetingModalProps {
   isOpen: boolean;
