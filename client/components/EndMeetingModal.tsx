@@ -374,7 +374,7 @@ export function EndMeetingModal({
             <CustomerEmployeeSelector
               ref={customerSelectorRef}
               onEmployeeSelect={handleCustomerEmployeeSelect}
-              selectedEmployeeId={selectedCustomerEmployee?._id}
+              selectedEmployeeId={currentSelectedEmployee?._id}
               disabled={isFormDisabled}
               onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
