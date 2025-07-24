@@ -254,15 +254,19 @@ export function StartMeetingModal({
                 value={clientName}
                 onValueChange={setClientName}
                 options={[
-                  // Regular customers
+                  // Regular customers (deduplicated)
                   ...(Array.isArray(customers)
-                    ? customers
-                        .filter(customer => customer && customer.CustomerCompanyName)
-                        .map((customer): SimpleSearchableSelectOption => ({
-                          value: customer.CustomerCompanyName,
-                          label: customer.CustomerCompanyName,
-                          searchTerms: [customer.CustomerCompanyName],
-                        }))
+                    ? Array.from(
+                        new Map(
+                          customers
+                            .filter(customer => customer && customer.CustomerCompanyName)
+                            .map(customer => [customer.CustomerCompanyName, customer])
+                        ).values()
+                      ).map((customer): SimpleSearchableSelectOption => ({
+                        value: customer.CustomerCompanyName,
+                        label: customer.CustomerCompanyName,
+                        searchTerms: [customer.CustomerCompanyName],
+                      }))
                     : []
                   ),
                   // Custom option
