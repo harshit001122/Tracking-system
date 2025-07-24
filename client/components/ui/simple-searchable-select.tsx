@@ -39,13 +39,7 @@ export function SimpleSearchableSelect({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  // Debug logging
-  console.log("SimpleSearchableSelect: Render with", {
-    value,
-    optionsCount: options.length,
-    disabled,
-    open
-  });
+
 
   // Ensure options is always an array
   const safeOptions = Array.isArray(options) ? options : [];
