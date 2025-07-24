@@ -526,6 +526,9 @@ export default function Tracking() {
                         );
                         if (activeMeeting) {
                           handleEndMeetingClick(activeMeeting.id);
+                        } else {
+                          console.error("No active meeting found to end. Available meetings:", meetings);
+                          alert("No active meeting found for this employee. Please ensure a meeting has been started.");
                         }
                       }}
                       disabled={isEndingMeeting !== null}
@@ -586,6 +589,9 @@ export default function Tracking() {
                         );
                         if (activeMeeting) {
                           handleEndMeetingClick(activeMeeting.id);
+                        } else {
+                          console.error("No active meeting found to end. Available meetings:", meetings);
+                          alert("No active meeting found for this employee. Please ensure a meeting has been started.");
                         }
                       }}
                       disabled={isEndingMeeting !== null}
