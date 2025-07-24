@@ -33,6 +33,12 @@ interface MeetingHistoryEntry {
   employeeId: string;
   meetingDetails: MeetingDetails;
   timestamp: string;
+  leadId?: string;
+  leadInfo?: {
+    id: string;
+    companyName: string;
+    contactName: string;
+  };
 }
 
 interface MeetingHistoryResponse {
