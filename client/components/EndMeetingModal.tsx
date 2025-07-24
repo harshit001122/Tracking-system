@@ -163,6 +163,27 @@ export function EndMeetingModal({
     }
   };
 
+  // Remove customer from selected list
+  const handleRemoveCustomer = (index: number) => {
+    const newSelectedCustomers = selectedCustomers.filter((_, i) => i !== index);
+    setSelectedCustomers(newSelectedCustomers);
+
+    // Update form data
+    setFormData(prev => ({
+      ...prev,
+      customers: newSelectedCustomers,
+      // Update legacy fields for the first customer
+      customerName: newSelectedCustomers[0]?.customerName || "",
+      customerEmployeeName: newSelectedCustomers[0]?.customerEmployeeName || "",
+      customerEmail: newSelectedCustomers[0]?.customerEmail || "",
+      customerMobile: newSelectedCustomers[0]?.customerMobile || "",
+      customerDesignation: newSelectedCustomers[0]?.customerDesignation || "",
+      customerDepartment: newSelectedCustomers[0]?.customerDepartment || "",
+    }));
+
+    console.log("EndMeetingModal: Removed customer from list, remaining:", newSelectedCustomers.length);
+  };
+
   // Handle adding new customer employee
   const handleAddNewEmployee = async (
     employeeData: NewCustomerEmployeeData,
@@ -298,17 +319,20 @@ export function EndMeetingModal({
 
     // Reset all form state
     setFormData({
+      customers: [],
+      discussion: "",
+      // Legacy fields
       customerName: "",
       customerEmployeeName: "",
       customerEmail: "",
       customerMobile: "",
       customerDesignation: "",
       customerDepartment: "",
-      discussion: "",
     });
     setErrors({});
-    setSelectedCustomerEmployee(null);
-    setSelectedCustomer(null);
+    setSelectedCustomers([]);
+    setCurrentSelectedEmployee(null);
+    setCurrentSelectedCustomer(null);
     setIsAddEmployeeOpen(false);
 
     // Reset the customer employee selector and clear any temporary employees
