@@ -71,15 +71,28 @@ export interface TrackingSession {
   status: "active" | "completed";
 }
 
-// Enhanced meeting data with customer details
+// Individual customer contact details
+export interface CustomerContact {
+  customerName: string;
+  customerEmployeeName: string;
+  customerEmail?: string;
+  customerMobile?: string;
+  customerDesignation?: string;
+  customerDepartment?: string;
+}
+
+// Enhanced meeting data with multiple customer contacts
 export interface MeetingDetails {
+  customers: CustomerContact[]; // Array of customer contacts
+  discussion: string; // mandatory
+
+  // Legacy fields for backward compatibility
   customerName?: string;
   customerEmployeeName?: string;
   customerEmail?: string;
   customerMobile?: string;
   customerDesignation?: string;
   customerDepartment?: string;
-  discussion: string; // mandatory
 }
 
 export interface MeetingLog {
