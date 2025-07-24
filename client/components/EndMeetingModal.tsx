@@ -378,54 +378,73 @@ export function EndMeetingModal({
               disabled={isFormDisabled}
               onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
-            {errors.customerEmployee && (
+            {errors.customers && (
               <div className="flex items-center space-x-1 text-sm text-destructive">
                 <AlertCircle className="h-3 w-3" />
-                <span>{errors.customerEmployee}</span>
+                <span>{errors.customers}</span>
               </div>
             )}
 
-            {selectedCustomerEmployee && (
-              <div className="p-4 border rounded-lg bg-muted/20">
-                <div className="flex items-center space-x-2 mb-3">
+            {/* Selected Customers List */}
+            {selectedCustomers.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
                   <Building2 className="h-4 w-4 text-primary" />
                   <span className="font-medium text-sm">
-                    Selected Customer Details
+                    Selected Customer Contacts ({selectedCustomers.length})
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Company:</span>
-                    <div className="font-medium">
-                      {selectedCustomer?.CustomerCompanyName}
+
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {selectedCustomers.map((customer, index) => (
+                    <div key={index} className="p-3 border rounded-lg bg-muted/20 relative">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRemoveCustomer(index)}
+                        className="absolute top-2 right-2 h-6 w-6 p-0 text-destructive hover:text-destructive"
+                        disabled={isFormDisabled}
+                      >
+                        ×
+                      </Button>
+
+                      <div className="grid grid-cols-2 gap-2 text-sm pr-8">
+                        <div>
+                          <span className="text-muted-foreground">Company:</span>
+                          <div className="font-medium">{customer.customerName}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Contact:</span>
+                          <div className="font-medium">{customer.customerEmployeeName}</div>
+                        </div>
+                        {customer.customerDesignation && (
+                          <div>
+                            <span className="text-muted-foreground">Position:</span>
+                            <div>{customer.customerDesignation}</div>
+                          </div>
+                        )}
+                        {customer.customerDepartment && (
+                          <div>
+                            <span className="text-muted-foreground">Department:</span>
+                            <div>{customer.customerDepartment}</div>
+                          </div>
+                        )}
+                        {customer.customerEmail && (
+                          <div>
+                            <span className="text-muted-foreground">Email:</span>
+                            <div className="text-xs">{customer.customerEmail}</div>
+                          </div>
+                        )}
+                        {customer.customerMobile && (
+                          <div>
+                            <span className="text-muted-foreground">Mobile:</span>
+                            <div className="text-xs">{customer.customerMobile}</div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Employee:</span>
-                    <div className="font-medium">
-                      {selectedCustomerEmployee.CustomerEmpName}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Position:</span>
-                    <div>{selectedCustomerEmployee.Designation}</div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Department:</span>
-                    <div>{selectedCustomerEmployee.Department}</div>
-                  </div>
-                  {selectedCustomerEmployee.Email && (
-                    <div>
-                      <span className="text-muted-foreground">Email:</span>
-                      <div>{selectedCustomerEmployee.Email}</div>
-                    </div>
-                  )}
-                  {selectedCustomerEmployee.Mobile && (
-                    <div>
-                      <span className="text-muted-foreground">Mobile:</span>
-                      <div>{selectedCustomerEmployee.Mobile}</div>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
             )}
