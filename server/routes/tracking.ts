@@ -18,7 +18,7 @@ let meetingHistory: Array<{
   meetingDetails: MeetingDetails;
   timestamp: string;
 }> = [];
-let historyIdCounter = 4;
+let historyIdCounter = 1;
 
 export const getTrackingSessions: RequestHandler = (req, res) => {
   try {
