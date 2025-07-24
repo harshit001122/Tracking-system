@@ -262,45 +262,58 @@ export function StartMeetingModal({
                 </div>
               </div>
             ) : (
-              <SimpleSearchableSelect
-                value={clientName}
-                onValueChange={setClientName}
-                options={[
-                  // Regular customers (deduplicated with better validation)
-                  ...(Array.isArray(customers)
-                    ? Array.from(
-                        new Map(
-                          customers
-                            .filter(customer =>
-                              customer &&
-                              customer.CustomerCompanyName &&
-                              typeof customer.CustomerCompanyName === 'string' &&
-                              customer.CustomerCompanyName.trim().length > 0
-                            )
-                            .map(customer => [customer.CustomerCompanyName.trim(), customer])
-                        ).values()
-                      ).map((customer): SimpleSearchableSelectOption => ({
-                        value: customer.CustomerCompanyName.trim(),
-                        label: customer.CustomerCompanyName.trim(),
-                        searchTerms: [customer.CustomerCompanyName.trim()],
-                      }))
-                    : []
-                  ),
-                  // Custom option
-                  {
-                    value: "custom",
-                    label: "Custom Client...",
-                    searchTerms: ["custom", "manual", "other"],
+              <div className="space-y-2">
+                <SimpleSearchableSelect
+                  value={clientName}
+                  onValueChange={(value) => {
+                    console.log("Client selection changed:", value);
+                    setClientName(value);
+                  }}
+                  options={[
+                    // Regular customers (deduplicated with better validation)
+                    ...(Array.isArray(customers)
+                      ? Array.from(
+                          new Map(
+                            customers
+                              .filter(customer => {
+                                const isValid = customer &&
+                                  customer.CustomerCompanyName &&
+                                  typeof customer.CustomerCompanyName === 'string' &&
+                                  customer.CustomerCompanyName.trim().length > 0;
+                                if (!isValid && customer) {
+                                  console.warn("Invalid customer data:", customer);
+                                }
+                                return isValid;
+                              })
+                              .map(customer => [customer.CustomerCompanyName.trim(), customer])
+                          ).values()
+                        ).map((customer): SimpleSearchableSelectOption => ({
+                          value: customer.CustomerCompanyName.trim(),
+                          label: customer.CustomerCompanyName.trim(),
+                          searchTerms: [customer.CustomerCompanyName.trim()],
+                        }))
+                      : []
+                    ),
+                    // Custom option
+                    {
+                      value: "custom",
+                      label: "Custom Client...",
+                      searchTerms: ["custom", "manual", "other"],
+                    }
+                  ]}
+                  placeholder={
+                    loadingCustomers ? "Loading companies..." : "Select a company or choose custom"
                   }
-                ]}
-                placeholder={
-                  loadingCustomers ? "Loading companies..." : "Select a company or choose custom"
-                }
-                emptyMessage="No companies found"
-                disabled={loadingCustomers}
-                searchPlaceholder="Search companies..."
-                className={errors.client ? "border-destructive" : ""}
-              />
+                  emptyMessage="No companies found. Choose custom to enter manually."
+                  disabled={loadingCustomers}
+                  searchPlaceholder="Search companies..."
+                  className={errors.client ? "border-destructive" : ""}
+                />
+                {/* Fallback manual input if dropdown fails */}
+                <div className="text-xs text-muted-foreground">
+                  Can't find your company? Use "Custom Client..." option above
+                </div>
+              </div>
             )}
             {errors.client && (
               <p className="text-sm text-destructive">{errors.client}</p>
@@ -345,24 +358,31 @@ export function StartMeetingModal({
                 {leads && leads.length > 0 ? (
                   <SimpleSearchableSelect
                     value={selectedLead}
-                    onValueChange={setSelectedLead}
+                    onValueChange={(value) => {
+                      console.log("Lead selection changed:", value);
+                      setSelectedLead(value);
+                    }}
                     options={
                       Array.isArray(leads)
                         ? Array.from(
                             new Map(
                               leads
-                                .filter(lead =>
-                                  lead &&
-                                  lead.Id &&
-                                  lead.CompanyName &&
-                                  lead.Name &&
-                                  typeof lead.Id === 'string' &&
-                                  typeof lead.CompanyName === 'string' &&
-                                  typeof lead.Name === 'string' &&
-                                  lead.Id.trim().length > 0 &&
-                                  lead.CompanyName.trim().length > 0 &&
-                                  lead.Name.trim().length > 0
-                                )
+                                .filter(lead => {
+                                  const isValid = lead &&
+                                    lead.Id &&
+                                    lead.CompanyName &&
+                                    lead.Name &&
+                                    typeof lead.Id === 'string' &&
+                                    typeof lead.CompanyName === 'string' &&
+                                    typeof lead.Name === 'string' &&
+                                    lead.Id.trim().length > 0 &&
+                                    lead.CompanyName.trim().length > 0 &&
+                                    lead.Name.trim().length > 0;
+                                  if (!isValid && lead) {
+                                    console.warn("Invalid lead data:", lead);
+                                  }
+                                  return isValid;
+                                })
                                 .map(lead => [lead.Id.trim(), lead])
                             ).values()
                           ).map((lead): SimpleSearchableSelectOption => ({
@@ -375,14 +395,14 @@ export function StartMeetingModal({
                               lead.Subject || "",
                               lead.Stage || "",
                               lead.Id.trim()
-                            ].filter(term => term && term.length > 0),
+                            ].filter(term => term && typeof term === 'string' && term.length > 0),
                           }))
                         : []
                     }
                     placeholder={
                       loadingLeads ? "Loading leads..." : "Select a lead (optional)"
                     }
-                    emptyMessage="No leads found"
+                    emptyMessage="No leads available"
                     disabled={loadingLeads}
                     searchPlaceholder="Search leads by ID, company, name..."
                   />
