@@ -28,6 +28,10 @@ import {
   getMeetingHistory,
   addMeetingToHistory,
 } from "./routes/tracking";
+import {
+  getEmployeeAnalytics,
+  getMeetingTrends,
+} from "./routes/analytics";
 
 export function createServer() {
   const app = express();
