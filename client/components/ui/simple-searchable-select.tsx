@@ -39,6 +39,14 @@ export function SimpleSearchableSelect({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  // Debug logging
+  console.log("SimpleSearchableSelect: Render with", {
+    value,
+    optionsCount: options.length,
+    disabled,
+    open
+  });
+
   // Ensure options is always an array
   const safeOptions = Array.isArray(options) ? options : [];
 
@@ -65,9 +73,12 @@ export function SimpleSearchableSelect({
 
   const handleSelect = (optionValue: string) => {
     try {
-      onValueChange(optionValue === value ? "" : optionValue);
+      console.log("SimpleSearchableSelect: Selecting option:", optionValue);
+      const newValue = optionValue === value ? "" : optionValue;
+      onValueChange(newValue);
       setOpen(false);
       setSearchValue("");
+      console.log("SimpleSearchableSelect: Selection complete, new value:", newValue);
     } catch (error) {
       console.error("Error in SimpleSearchableSelect onSelect:", error);
     }
