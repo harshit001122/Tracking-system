@@ -187,6 +187,12 @@ export default function Index() {
                 Refresh
               </Button>
               <Button variant="outline" size="sm" asChild>
+                <Link to="/dashboard">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
                 <Link to="/team-management">
                   <Users className="h-4 w-4 mr-2" />
                   Manage Team
