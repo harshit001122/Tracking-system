@@ -25,6 +25,7 @@ import {
   ChevronRight,
   FileText,
   Filter,
+  Target,
 } from "lucide-react";
 
 interface MeetingHistoryEntry {
