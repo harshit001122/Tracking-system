@@ -65,9 +65,9 @@ export function EndMeetingModal({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Customer employee selection is mandatory
-    if (!selectedCustomerEmployee) {
-      newErrors.customerEmployee = "Please select a customer employee";
+    // At least one customer is mandatory
+    if (selectedCustomers.length === 0) {
+      newErrors.customers = "Please add at least one customer contact";
     }
 
     // Discussion is mandatory
@@ -113,7 +113,7 @@ export function EndMeetingModal({
     }
   };
 
-  // Handle customer employee selection
+  // Handle customer employee selection (adds to list)
   const handleCustomerEmployeeSelect = (
     employee: CustomerEmployee,
     customer: Customer,
@@ -121,12 +121,11 @@ export function EndMeetingModal({
     console.log("EndMeetingModal: Customer employee selected:", employee);
     console.log("EndMeetingModal: Customer selected:", customer);
 
-    setSelectedCustomerEmployee(employee);
-    setSelectedCustomer(customer);
+    setCurrentSelectedEmployee(employee);
+    setCurrentSelectedCustomer(customer);
 
-    // Auto-fill form data from selected employee
-    const newFormData = {
-      ...formData,
+    // Create customer contact object
+    const customerContact: CustomerContact = {
       customerName: customer.CustomerCompanyName,
       customerEmployeeName: employee.CustomerEmpName,
       customerEmail: employee.Email || "",
@@ -135,8 +134,33 @@ export function EndMeetingModal({
       customerDepartment: employee.Department || "",
     };
 
-    console.log("EndMeetingModal: Updating form data to:", newFormData);
-    setFormData(newFormData);
+    // Check if this customer is already added
+    const isAlreadyAdded = selectedCustomers.some(
+      (c) => c.customerName === customerContact.customerName &&
+             c.customerEmployeeName === customerContact.customerEmployeeName
+    );
+
+    if (!isAlreadyAdded) {
+      const newSelectedCustomers = [...selectedCustomers, customerContact];
+      setSelectedCustomers(newSelectedCustomers);
+
+      // Update form data with all customers
+      setFormData(prev => ({
+        ...prev,
+        customers: newSelectedCustomers,
+        // Keep legacy fields for the first customer for backward compatibility
+        customerName: newSelectedCustomers[0]?.customerName || "",
+        customerEmployeeName: newSelectedCustomers[0]?.customerEmployeeName || "",
+        customerEmail: newSelectedCustomers[0]?.customerEmail || "",
+        customerMobile: newSelectedCustomers[0]?.customerMobile || "",
+        customerDesignation: newSelectedCustomers[0]?.customerDesignation || "",
+        customerDepartment: newSelectedCustomers[0]?.customerDepartment || "",
+      }));
+
+      console.log("EndMeetingModal: Added customer to list:", customerContact);
+    } else {
+      console.log("EndMeetingModal: Customer already in list, skipping");
+    }
   };
 
   // Handle adding new customer employee
