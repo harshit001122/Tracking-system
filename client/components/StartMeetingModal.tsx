@@ -168,21 +168,70 @@ export function StartMeetingModal({
           {/* Client Selection */}
           <div className="space-y-2">
             <Label htmlFor="client">Client / Company</Label>
-            <Select value={clientName} onValueChange={setClientName}>
-              <SelectTrigger
-                className={errors.client ? "border-destructive" : ""}
-              >
-                <SelectValue placeholder="Select a client or choose custom" />
-              </SelectTrigger>
-              <SelectContent>
-                {COMMON_CLIENTS.map((client) => (
-                  <SelectItem key={client} value={client}>
-                    {client}
-                  </SelectItem>
-                ))}
-                <SelectItem value="custom">Custom Client...</SelectItem>
-              </SelectContent>
-            </Select>
+            {customerError ? (
+              <div className="space-y-2">
+                <div className="border border-destructive rounded-md p-3 text-sm text-destructive">
+                  <div className="flex items-center space-x-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <p className="font-medium">Failed to load companies</p>
+                  </div>
+                  <p className="text-xs mt-1">{customerError}</p>
+                  <button
+                    type="button"
+                    onClick={fetchCustomers}
+                    className="mt-2 px-3 py-1 bg-destructive/10 hover:bg-destructive/20 rounded text-xs"
+                  >
+                    Retry
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customClientFallback">Enter Client Name Manually</Label>
+                  <Input
+                    id="customClientFallback"
+                    value={customClient}
+                    onChange={(e) => {
+                      setCustomClient(e.target.value);
+                      setClientName("custom");
+                    }}
+                    placeholder="Enter client name"
+                    className={errors.client ? "border-destructive" : ""}
+                  />
+                </div>
+              </div>
+            ) : (
+              <Select value={clientName} onValueChange={setClientName}>
+                <SelectTrigger
+                  className={errors.client ? "border-destructive" : ""}
+                >
+                  <SelectValue
+                    placeholder={
+                      loadingCustomers ? (
+                        <div className="flex items-center space-x-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Loading companies...</span>
+                        </div>
+                      ) : (
+                        "Select a company or choose custom"
+                      )
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {customers.length === 0 && !loadingCustomers ? (
+                    <SelectItem value="no-companies" disabled>
+                      No companies found
+                    </SelectItem>
+                  ) : (
+                    customers.map((customer) => (
+                      <SelectItem key={customer._id} value={customer.CustomerCompanyName}>
+                        {customer.CustomerCompanyName}
+                      </SelectItem>
+                    ))
+                  )}
+                  <SelectItem value="custom">Custom Client...</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
             {errors.client && (
               <p className="text-sm text-destructive">{errors.client}</p>
             )}
