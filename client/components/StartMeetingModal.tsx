@@ -111,9 +111,38 @@ export function StartMeetingModal({
     }
   };
 
+  // Fetch leads from external API
+  const fetchLeads = async () => {
+    setLoadingLeads(true);
+    setLeadError(null);
+    try {
+      console.log("Fetching leads from external API for start meeting...");
+      const response = await fetch(
+        "https://jbdspower.in/LeafNetServer/api/getAllLead",
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch leads: ${response.statusText}`);
+      }
+      const data = await response.json();
+
+      // The API returns an array directly
+      const leadArray = Array.isArray(data) ? data : [];
+      console.log(`Fetched ${leadArray.length} leads for start meeting`);
+      setLeads(leadArray);
+    } catch (err) {
+      console.error("Error fetching leads for start meeting:", err);
+      setLeadError(
+        err instanceof Error ? err.message : "Failed to fetch leads",
+      );
+    } finally {
+      setLoadingLeads(false);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       fetchCustomers();
+      fetchLeads();
     }
   }, [isOpen]);
 
@@ -136,12 +165,21 @@ export function StartMeetingModal({
       return;
     }
 
+    // Get selected lead info
+    const selectedLeadInfo = selectedLead ? leads.find(lead => lead.Id === selectedLead) : null;
+
     // Clear errors and submit
     setErrors({});
     onStartMeeting({
       clientName: finalClientName,
       reason,
       notes: notes.trim(),
+      leadId: selectedLead || undefined,
+      leadInfo: selectedLeadInfo ? {
+        id: selectedLeadInfo.Id,
+        companyName: selectedLeadInfo.CompanyName,
+        contactName: selectedLeadInfo.Name,
+      } : undefined,
     });
   };
 
@@ -153,6 +191,8 @@ export function StartMeetingModal({
     setNotes("");
     setErrors({});
     setCustomerError(null);
+    setLeadError(null);
+    setSelectedLead("");
     onClose();
   };
 
