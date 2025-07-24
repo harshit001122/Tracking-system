@@ -18,8 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, MapPin, User, Loader2, AlertCircle } from "lucide-react";
-import { Customer } from "@shared/api";
+import { Clock, MapPin, User, Loader2, AlertCircle, FileText } from "lucide-react";
+import { Customer, Lead } from "@shared/api";
+import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 
 interface StartMeetingModalProps {
   isOpen: boolean;
@@ -28,6 +29,12 @@ interface StartMeetingModalProps {
     clientName: string;
     reason: string;
     notes: string;
+    leadId?: string;
+    leadInfo?: {
+      id: string;
+      companyName: string;
+      contactName: string;
+    };
   }) => void;
   employeeName: string;
   location: string;
@@ -71,6 +78,10 @@ export function StartMeetingModal({
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [customerError, setCustomerError] = useState<string | null>(null);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loadingLeads, setLoadingLeads] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  const [selectedLead, setSelectedLead] = useState<string>("");
 
   // Fetch customers from external API
   const fetchCustomers = async () => {
