@@ -83,6 +83,7 @@ export function MeetingHistory({
         params.append("employeeId", employeeId);
       }
 
+      console.log("Fetching meeting history for employee:", employeeId);
       const response = await HttpClient.get(
         `/api/meeting-history?${params.toString()}`,
       );
@@ -90,14 +91,20 @@ export function MeetingHistory({
       if (response.ok) {
         const data: MeetingHistoryResponse = await response.json();
         console.log("Meeting history data received:", data);
-        setMeetings(data.meetings);
-        setTotal(data.total);
-        setTotalPages(data.totalPages);
+        console.log("Number of meetings:", data.meetings?.length || 0);
+        if (data.meetings?.length > 0) {
+          console.log("First meeting details:", data.meetings[0]);
+        }
+        setMeetings(data.meetings || []);
+        setTotal(data.total || 0);
+        setTotalPages(data.totalPages || 1);
       } else {
+        const errorText = await response.text();
         console.error(
           "Failed to fetch meeting history:",
           response.status,
           response.statusText,
+          errorText
         );
       }
     } catch (error) {
@@ -220,35 +227,25 @@ export function MeetingHistory({
                                   {formatDate(meeting.timestamp)}
                                 </span>
                               </div>
-                              {meeting.meetingDetails.customerName && (
-                                <div className="flex items-center space-x-2">
-                                  <Building className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm font-medium">
-                                    {meeting.meetingDetails.customerName}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-
-                            {meeting.meetingDetails.customerEmployeeName && (
                               <div className="flex items-center space-x-2">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                  {meeting.meetingDetails.customerEmployeeName}
-                                  {meeting.meetingDetails
-                                    .customerDesignation && (
-                                    <span className="text-muted-foreground ml-1">
-                                      (
-                                      {
-                                        meeting.meetingDetails
-                                          .customerDesignation
-                                      }
-                                      )
-                                    </span>
-                                  )}
+                                <Building className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium">
+                                  {meeting.meetingDetails.customerName || "Unknown Company"}
                                 </span>
                               </div>
-                            )}
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <User className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm">
+                                {meeting.meetingDetails.customerEmployeeName || "No contact person"}
+                                {meeting.meetingDetails.customerDesignation && (
+                                  <span className="text-muted-foreground ml-1">
+                                    ({meeting.meetingDetails.customerDesignation})
+                                  </span>
+                                )}
+                              </span>
+                            </div>
 
                             <div className="flex items-start space-x-2">
                               <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5" />
