@@ -116,19 +116,25 @@ export function EndMeetingModal({
     employee: CustomerEmployee,
     customer: Customer,
   ) => {
+    console.log("EndMeetingModal: Customer employee selected:", employee);
+    console.log("EndMeetingModal: Customer selected:", customer);
+
     setSelectedCustomerEmployee(employee);
     setSelectedCustomer(customer);
 
     // Auto-fill form data from selected employee
-    setFormData((prev) => ({
-      ...prev,
+    const newFormData = {
+      ...formData,
       customerName: customer.CustomerCompanyName,
       customerEmployeeName: employee.CustomerEmpName,
-      customerEmail: employee.Email,
-      customerMobile: employee.Mobile,
-      customerDesignation: employee.Designation,
-      customerDepartment: employee.Department,
-    }));
+      customerEmail: employee.Email || "",
+      customerMobile: employee.Mobile || "",
+      customerDesignation: employee.Designation || "",
+      customerDepartment: employee.Department || "",
+    };
+
+    console.log("EndMeetingModal: Updating form data to:", newFormData);
+    setFormData(newFormData);
   };
 
   // Handle adding new customer employee
