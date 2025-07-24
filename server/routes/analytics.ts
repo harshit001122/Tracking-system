@@ -3,6 +3,116 @@ import { format, startOfDay, endOfDay, subDays, startOfWeek, endOfWeek, startOfM
 // We'll create our own functions here since the employees module doesn't export what we need
 import { ExternalUser, Employee } from "@shared/api";
 
+// Replicate the external API fetch function
+const EXTERNAL_API_URL = "https://jbdspower.in/LeafNetServer/api/user";
+
+async function fetchExternalUsers(): Promise<ExternalUser[]> {
+  try {
+    console.log("Fetching users from external API:", EXTERNAL_API_URL);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const response = await fetch(EXTERNAL_API_URL, {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const users: ExternalUser[] = await response.json();
+    console.log(`External API response: { count: ${users.length}, sample: ${JSON.stringify(users[0] || {}, null, 2)} }`);
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching external users:", error);
+    if (error.name === 'AbortError') {
+      console.error("External API request timed out after 30 seconds");
+    } else if (error.message.includes("fetch")) {
+      console.error("Network error connecting to external API");
+    }
+    return [];
+  }
+}
+
+// Replicate the mapping function
+interface EmployeeStatus {
+  status: "active" | "inactive" | "meeting";
+  location: {
+    lat: number;
+    lng: number;
+    address: string;
+    timestamp: string;
+  };
+  lastUpdate: string;
+  currentTask?: string;
+}
+
+let employeeStatuses: Record<string, EmployeeStatus> = {};
+
+function getRealisticIndianLocation(index: number) {
+  const locations = [
+    { lat: 28.6139, lng: 77.2090, address: "New Delhi, India" },
+    { lat: 19.0760, lng: 72.8777, address: "Mumbai, Maharashtra" },
+    { lat: 12.9716, lng: 77.5946, address: "Bangalore, Karnataka" },
+    { lat: 13.0827, lng: 80.2707, address: "Chennai, Tamil Nadu" },
+    { lat: 22.5726, lng: 88.3639, address: "Kolkata, West Bengal" },
+    { lat: 26.9124, lng: 75.7873, address: "Jaipur, Rajasthan" },
+    { lat: 21.1458, lng: 79.0882, address: "Nagpur, Maharashtra" },
+    { lat: 23.0225, lng: 72.5714, address: "Ahmedabad, Gujarat" },
+    { lat: 17.3850, lng: 78.4867, address: "Hyderabad, Telangana" },
+    { lat: 18.5204, lng: 73.8567, address: "Pune, Maharashtra" }
+  ];
+  return locations[index % locations.length];
+}
+
+function mapExternalUserToEmployee(user: ExternalUser, index: number): Employee {
+  const userId = user._id;
+
+  if (!employeeStatuses[userId]) {
+    const realisticLocation = getRealisticIndianLocation(index);
+    employeeStatuses[userId] = {
+      status: index === 1 ? "meeting" : index === 3 ? "inactive" : "active",
+      location: {
+        ...realisticLocation,
+        timestamp: new Date().toISOString(),
+      },
+      lastUpdate: `${Math.floor(Math.random() * 15) + 1} minutes ago`,
+      currentTask:
+        index === 0
+          ? "Client meeting"
+          : index === 1
+            ? "Equipment installation"
+            : undefined,
+    };
+  }
+
+  const status = employeeStatuses[userId];
+
+  return {
+    id: userId,
+    name: user.name,
+    email: user.email,
+    phone: user.mobileNumber,
+    status: status.status,
+    location: status.location,
+    lastUpdate: status.lastUpdate,
+    currentTask: status.currentTask,
+    deviceId: `device_${userId.slice(-6)}`,
+    designation: user.designation,
+    department: user.department,
+    companyName: user.companyName[0]?.companyName,
+    reportTo: user.report?.name,
+  };
+}
+
 // Function to get date range based on filter
 function getDateRange(dateRange: string, startDate?: string, endDate?: string) {
   const now = new Date();
