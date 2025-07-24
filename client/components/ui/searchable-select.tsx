@@ -77,6 +77,11 @@ export function SearchableSelect({
 
   const selectedOption = safeOptions.find((option) => option?.value === value);
 
+  // Don't render if there's no valid onValueChange function
+  if (!onValueChange || typeof onValueChange !== 'function') {
+    return null;
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -92,33 +97,45 @@ export function SearchableSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
-        <Command>
-          <CommandInput 
+        <Command shouldFilter={false}>
+          <CommandInput
             placeholder={searchPlaceholder}
             value={searchValue}
             onValueChange={setSearchValue}
           />
           <CommandEmpty>{emptyMessage}</CommandEmpty>
           <CommandGroup className="max-h-64 overflow-y-auto">
-            {filteredOptions.map((option) => (
-              <CommandItem
-                key={option.value}
-                value={option.value}
-                onSelect={(currentValue) => {
-                  onValueChange(currentValue === value ? "" : currentValue);
-                  setOpen(false);
-                  setSearchValue("");
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === option.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {option.label}
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                option && option.value && option.label ? (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                      try {
+                        onValueChange(currentValue === value ? "" : currentValue);
+                        setOpen(false);
+                        setSearchValue("");
+                      } catch (error) {
+                        console.error("Error in SearchableSelect onSelect:", error);
+                      }
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ) : null
+              ))
+            ) : (
+              <CommandItem disabled>
+                {emptyMessage}
               </CommandItem>
-            ))}
+            )}
           </CommandGroup>
         </Command>
       </PopoverContent>
