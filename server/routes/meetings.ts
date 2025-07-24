@@ -63,14 +63,15 @@ export const getMeetings: RequestHandler = (req, res) => {
 
 export const createMeeting: RequestHandler = (req, res) => {
   try {
-    const { employeeId, location, clientName, notes }: CreateMeetingRequest =
-      req.body;
+    const { employeeId, location, clientName, notes, leadId, leadInfo } = req.body;
 
     if (!employeeId || !location) {
       return res.status(400).json({
         error: "Employee ID and location are required",
       });
     }
+
+    console.log("Creating meeting with lead info:", { leadId, leadInfo });
 
     const newMeeting: MeetingLog = {
       id: `meeting_${String(meetingIdCounter++).padStart(3, "0")}`,
@@ -83,6 +84,8 @@ export const createMeeting: RequestHandler = (req, res) => {
       clientName,
       notes,
       status: "in-progress",
+      leadId: leadId || undefined,
+      leadInfo: leadInfo || undefined,
     };
 
     meetings.push(newMeeting);
