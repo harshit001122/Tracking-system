@@ -10,12 +10,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MeetingDetails, Customer } from "@shared/api";
+import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
 import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
 import {
-  CompanySelector,
-  CompanySelectorRef,
-} from "./CompanySelector";
+  CustomerEmployeeSelector,
+  CustomerEmployeeSelectorRef,
+} from "./CustomerEmployeeSelector";
+import {
+  AddCustomerEmployeeModal,
+  NewCustomerEmployeeData,
+} from "./AddCustomerEmployeeModal";
 
 interface EndMeetingModalProps {
   isOpen: boolean;
@@ -45,30 +49,23 @@ export function EndMeetingModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Company selection state
+  // Customer employee selection state
+  const [selectedCustomerEmployee, setSelectedCustomerEmployee] =
+    useState<CustomerEmployee | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null,
   );
-  const [customerEmployeeName, setCustomerEmployeeName] = useState("");
-  const [customerEmployeeDesignation, setCustomerEmployeeDesignation] = useState("");
-  const [customerEmployeeDepartment, setCustomerEmployeeDepartment] = useState("");
-  const [customerEmployeeEmail, setCustomerEmployeeEmail] = useState("");
-  const [customerEmployeeMobile, setCustomerEmployeeMobile] = useState("");
+  const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
 
-  // Ref for company selector
-  const companySelectorRef = useRef<CompanySelectorRef>(null);
+  // Ref for customer employee selector
+  const customerSelectorRef = useRef<CustomerEmployeeSelectorRef>(null);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Company selection is mandatory
-    if (!selectedCustomer) {
-      newErrors.company = "Please select a company";
-    }
-
-    // Customer employee name is mandatory
-    if (!customerEmployeeName.trim()) {
-      newErrors.customerEmployeeName = "Customer employee name is required";
+    // Customer employee selection is mandatory
+    if (!selectedCustomerEmployee) {
+      newErrors.customerEmployee = "Please select a customer employee";
     }
 
     // Discussion is mandatory
