@@ -167,8 +167,18 @@ export function StartMeetingModal({
       return;
     }
 
-    // Get selected lead info
-    const selectedLeadInfo = selectedLead ? leads.find(lead => lead.Id === selectedLead) : null;
+    // Get selected lead info with proper error handling
+    const selectedLeadInfo = selectedLead && Array.isArray(leads)
+      ? leads.find(lead => lead && lead.Id === selectedLead)
+      : null;
+
+    console.log("Starting meeting with data:", {
+      clientName: finalClientName,
+      reason,
+      notes: notes.trim(),
+      leadId: selectedLead || undefined,
+      leadInfo: selectedLeadInfo
+    });
 
     // Clear errors and submit
     setErrors({});
