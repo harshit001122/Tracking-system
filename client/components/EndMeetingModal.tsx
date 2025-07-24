@@ -111,40 +111,119 @@ export function EndMeetingModal({
     }
   };
 
-  // Handle company selection
-  const handleCompanySelect = (customer: Customer) => {
+  // Handle customer employee selection
+  const handleCustomerEmployeeSelect = (
+    employee: CustomerEmployee,
+    customer: Customer,
+  ) => {
+    setSelectedCustomerEmployee(employee);
     setSelectedCustomer(customer);
 
-    // Auto-fill company name in form data
+    // Auto-fill form data from selected employee
     setFormData((prev) => ({
       ...prev,
       customerName: customer.CustomerCompanyName,
+      customerEmployeeName: employee.CustomerEmpName,
+      customerEmail: employee.Email,
+      customerMobile: employee.Mobile,
+      customerDesignation: employee.Designation,
+      customerDepartment: employee.Department,
     }));
   };
 
-  // Handle employee field changes
-  const handleEmployeeFieldChange = (field: string, value: string) => {
-    switch (field) {
-      case "name":
-        setCustomerEmployeeName(value);
-        setFormData(prev => ({ ...prev, customerEmployeeName: value }));
-        break;
-      case "designation":
-        setCustomerEmployeeDesignation(value);
-        setFormData(prev => ({ ...prev, customerDesignation: value }));
-        break;
-      case "department":
-        setCustomerEmployeeDepartment(value);
-        setFormData(prev => ({ ...prev, customerDepartment: value }));
-        break;
-      case "email":
-        setCustomerEmployeeEmail(value);
-        setFormData(prev => ({ ...prev, customerEmail: value }));
-        break;
-      case "mobile":
-        setCustomerEmployeeMobile(value);
-        setFormData(prev => ({ ...prev, customerMobile: value }));
-        break;
+  // Handle adding new customer employee
+  const handleAddNewEmployee = async (
+    employeeData: NewCustomerEmployeeData,
+  ) => {
+    try {
+      // Create a new customer employee object with generated ID
+      const newEmployeeId = `temp_${Date.now()}`;
+      const newEmployee: CustomerEmployee = {
+        _id: newEmployeeId,
+        CustomerEmpName: employeeData.customerEmployeeName,
+        Designation: employeeData.designation,
+        Department: employeeData.department,
+        Mobile: employeeData.mobile,
+        Email: employeeData.email,
+      };
+
+      // Create a temporary customer object if it's a new company
+      const newCustomer: Customer = {
+        _id: `temp_customer_${Date.now()}`,
+        CustomerCompanyName: employeeData.customerName,
+        Employees: [newEmployee],
+        // Fill in other required fields with defaults
+        GstNumber: "",
+        Status: "Active",
+        RJBDSName: "",
+        LedgerType: { _id: "", Name: "", __v: 0 },
+        Dealer: { _id: "", Name: "", __v: 0 },
+        Mode: { _id: "", Name: "", __v: 0 },
+        CompanyName: {
+          _id: "",
+          companyName: employeeData.customerName,
+          __v: 0,
+        },
+        Addresses: [],
+        Gst: "",
+        BusinessType: "",
+        AdharNumber: "",
+        PanNumber: "",
+        ImportExportCode: "",
+        WhatsappNumber: "",
+        OpBalance: 0,
+        BankDetails: {
+          AccountholderName: "",
+          AccountNumber: "",
+          IFSC: "",
+          BankName: "",
+          BranchName: "",
+          AccountType: "",
+        },
+        UploadGSTCertificate: null,
+        UploadAdharCardFront: null,
+        UploadAdharCardBack: null,
+        UploadPanCard: null,
+        CancelledCheque: null,
+        DistributorAuthorizedCertificate: null,
+        UploadImportExportCertificate: null,
+        CustomerId: "",
+        CustomerStatus: "Temporary",
+        updatedAt: new Date().toISOString(),
+        __v: 0,
+      };
+
+      console.log("Creating new customer employee:", employeeData);
+      console.log("Generated employee object:", newEmployee);
+      console.log("Generated customer object:", newCustomer);
+
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Add the new employee to the selector immediately
+      if (customerSelectorRef.current) {
+        console.log("Adding temp employee to selector...");
+        customerSelectorRef.current.addTempEmployee(
+          newEmployee,
+          employeeData.customerName,
+          newCustomer._id,
+        );
+        console.log("Temp employee added to selector");
+      } else {
+        console.error("customerSelectorRef.current is null!");
+      }
+
+      // Automatically select the newly created employee
+      setTimeout(() => {
+        console.log("Auto-selecting newly created employee...");
+        handleCustomerEmployeeSelect(newEmployee, newCustomer);
+      }, 100);
+
+      console.log("Customer employee added successfully!");
+      return { employee: newEmployee, customer: newCustomer };
+    } catch (error) {
+      console.error("Error adding customer employee:", error);
+      throw error;
     }
   };
 
