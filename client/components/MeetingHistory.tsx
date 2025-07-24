@@ -395,70 +395,121 @@ export function MeetingHistory({
             </DialogHeader>
 
             <div className="space-y-4">
-              {selectedMeeting.meetingDetails.customerName && (
+              {/* Display multiple customers or fallback to legacy */}
+              {selectedMeeting.meetingDetails.customers && selectedMeeting.meetingDetails.customers.length > 0 ? (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">
-                    Customer Name
+                    Customer Contacts ({selectedMeeting.meetingDetails.customers.length})
                   </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerName}
-                  </p>
+                  <div className="space-y-3 mt-2">
+                    {selectedMeeting.meetingDetails.customers.map((customer, index) => (
+                      <div key={index} className="p-3 bg-muted/20 rounded-md space-y-2">
+                        <div>
+                          <span className="text-sm font-medium">{customer.customerName}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Contact:</span>
+                            <p>{customer.customerEmployeeName}</p>
+                          </div>
+                          {customer.customerDesignation && (
+                            <div>
+                              <span className="text-muted-foreground">Position:</span>
+                              <p>{customer.customerDesignation}</p>
+                            </div>
+                          )}
+                          {customer.customerDepartment && (
+                            <div>
+                              <span className="text-muted-foreground">Department:</span>
+                              <p>{customer.customerDepartment}</p>
+                            </div>
+                          )}
+                          {customer.customerEmail && (
+                            <div>
+                              <span className="text-muted-foreground">Email:</span>
+                              <p>{customer.customerEmail}</p>
+                            </div>
+                          )}
+                          {customer.customerMobile && (
+                            <div>
+                              <span className="text-muted-foreground">Mobile:</span>
+                              <p>{customer.customerMobile}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              )}
+              ) : (
+                /* Fallback to legacy single customer display */
+                <>
+                  {selectedMeeting.meetingDetails.customerName && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Customer Name
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerName}
+                      </p>
+                    </div>
+                  )}
 
-              {selectedMeeting.meetingDetails.customerEmployeeName && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Contact Person
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerEmployeeName}
-                  </p>
-                </div>
-              )}
+                  {selectedMeeting.meetingDetails.customerEmployeeName && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Contact Person
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerEmployeeName}
+                      </p>
+                    </div>
+                  )}
 
-              {selectedMeeting.meetingDetails.customerEmail && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Email
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerEmail}
-                  </p>
-                </div>
-              )}
+                  {selectedMeeting.meetingDetails.customerEmail && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Email
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerEmail}
+                      </p>
+                    </div>
+                  )}
 
-              {selectedMeeting.meetingDetails.customerMobile && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Mobile
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerMobile}
-                  </p>
-                </div>
-              )}
+                  {selectedMeeting.meetingDetails.customerMobile && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Mobile
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerMobile}
+                      </p>
+                    </div>
+                  )}
 
-              {selectedMeeting.meetingDetails.customerDesignation && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Designation
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerDesignation}
-                  </p>
-                </div>
-              )}
+                  {selectedMeeting.meetingDetails.customerDesignation && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Designation
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerDesignation}
+                      </p>
+                    </div>
+                  )}
 
-              {selectedMeeting.meetingDetails.customerDepartment && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Department
-                  </label>
-                  <p className="text-sm">
-                    {selectedMeeting.meetingDetails.customerDepartment}
-                  </p>
-                </div>
+                  {selectedMeeting.meetingDetails.customerDepartment && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">
+                        Department
+                      </label>
+                      <p className="text-sm">
+                        {selectedMeeting.meetingDetails.customerDepartment}
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
 
               <div>
