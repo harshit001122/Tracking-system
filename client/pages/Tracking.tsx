@@ -285,6 +285,12 @@ export default function Tracking() {
     clientName: string;
     reason: string;
     notes: string;
+    leadId?: string;
+    leadInfo?: {
+      id: string;
+      companyName: string;
+      contactName: string;
+    };
   }) => {
     if (!employee) return;
 
@@ -299,6 +305,8 @@ export default function Tracking() {
         },
         clientName: meetingData.clientName,
         notes: `${meetingData.reason}${meetingData.notes ? ` - ${meetingData.notes}` : ""}`,
+        leadId: meetingData.leadId,
+        leadInfo: meetingData.leadInfo,
       });
 
       if (response.ok) {
