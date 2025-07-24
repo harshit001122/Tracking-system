@@ -230,24 +230,49 @@ export function MeetingHistory({
                                   {formatDate(meeting.timestamp)}
                                 </span>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <Building className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">
-                                  {meeting.meetingDetails.customerName || "Unknown Company"}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm">
-                                {meeting.meetingDetails.customerEmployeeName || "No contact person"}
-                                {meeting.meetingDetails.customerDesignation && (
-                                  <span className="text-muted-foreground ml-1">
-                                    ({meeting.meetingDetails.customerDesignation})
-                                  </span>
-                                )}
-                              </span>
+                              {/* Display multiple customers */}
+                              {meeting.meetingDetails.customers && meeting.meetingDetails.customers.length > 0 ? (
+                                <div className="space-y-1">
+                                  <div className="flex items-center space-x-2">
+                                    <Building className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm font-medium">
+                                      Customers ({meeting.meetingDetails.customers.length})
+                                    </span>
+                                  </div>
+                                  {meeting.meetingDetails.customers.map((customer, index) => (
+                                    <div key={index} className="ml-6 text-sm">
+                                      <div className="font-medium">{customer.customerName}</div>
+                                      <div className="text-muted-foreground">
+                                        Contact: {customer.customerEmployeeName}
+                                        {customer.customerDesignation && (
+                                          <span> ({customer.customerDesignation})</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                /* Fallback to legacy fields for backward compatibility */
+                                <div className="space-y-1">
+                                  <div className="flex items-center space-x-2">
+                                    <Building className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm font-medium">
+                                      {meeting.meetingDetails.customerName || "Unknown Company"}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-2 ml-6">
+                                    <User className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm">
+                                      {meeting.meetingDetails.customerEmployeeName || "No contact person"}
+                                      {meeting.meetingDetails.customerDesignation && (
+                                        <span className="text-muted-foreground ml-1">
+                                          ({meeting.meetingDetails.customerDesignation})
+                                        </span>
+                                      )}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
                             </div>
 
                             <div className="flex items-start space-x-2">
