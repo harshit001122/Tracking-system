@@ -6,37 +6,7 @@ import {
 } from "@shared/api";
 
 // In-memory storage for demo purposes
-let meetings: MeetingLog[] = [
-  {
-    id: "meeting_001",
-    employeeId: "2",
-    location: {
-      lat: 40.7589,
-      lng: -73.9851,
-      address: "456 Park Ave, New York, NY",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
-    },
-    startTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    clientName: "Tech Solutions Inc",
-    notes: "Equipment installation and setup",
-    status: "in-progress",
-  },
-  {
-    id: "meeting_002",
-    employeeId: "1",
-    location: {
-      lat: 40.7128,
-      lng: -74.006,
-      address: "123 Broadway, New York, NY",
-      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-    },
-    startTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    endTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    clientName: "Acme Corporation",
-    notes: "Quarterly review and contract renewal discussion",
-    status: "completed",
-  },
-];
+let meetings: MeetingLog[] = [];
 
 let meetingIdCounter = 3;
 
