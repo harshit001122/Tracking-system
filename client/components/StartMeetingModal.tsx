@@ -302,6 +302,49 @@ export function StartMeetingModal({
             </div>
           )}
 
+          {/* Lead Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="lead">Lead Association (Optional)</Label>
+            {leadError ? (
+              <div className="border border-destructive rounded-md p-3 text-sm text-destructive">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <p className="font-medium">Failed to load leads</p>
+                </div>
+                <p className="text-xs mt-1">{leadError}</p>
+                <button
+                  type="button"
+                  onClick={fetchLeads}
+                  className="mt-2 px-3 py-1 bg-destructive/10 hover:bg-destructive/20 rounded text-xs"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <SearchableSelect
+                value={selectedLead}
+                onValueChange={setSelectedLead}
+                options={leads.map((lead): SearchableSelectOption => ({
+                  value: lead.Id,
+                  label: `${lead.Id} - ${lead.CompanyName} (${lead.Name})`,
+                  searchTerms: [lead.CompanyName, lead.Name, lead.Email, lead.Subject, lead.Stage || ""],
+                }))}
+                placeholder={
+                  loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                }
+                emptyMessage="No leads found"
+                disabled={loadingLeads}
+                searchPlaceholder="Search leads by ID, company, name..."
+              />
+            )}
+            {selectedLead && (
+              <div className="text-xs text-muted-foreground">
+                <FileText className="h-3 w-3 inline mr-1" />
+                Lead selected: {leads.find(l => l.Id === selectedLead)?.Subject}
+              </div>
+            )}
+          </div>
+
           {/* Meeting Reason */}
           <div className="space-y-2">
             <Label htmlFor="reason">Meeting Reason / Type</Label>
