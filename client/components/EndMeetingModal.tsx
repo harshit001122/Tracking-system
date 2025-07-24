@@ -10,16 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MeetingDetails, CustomerEmployee, Customer } from "@shared/api";
+import { MeetingDetails, Customer } from "@shared/api";
 import { AlertCircle, CheckCircle, Clock, User, Building2 } from "lucide-react";
 import {
-  CustomerEmployeeSelector,
-  CustomerEmployeeSelectorRef,
-} from "./CustomerEmployeeSelector";
-import {
-  AddCustomerEmployeeModal,
-  NewCustomerEmployeeData,
-} from "./AddCustomerEmployeeModal";
+  CompanySelector,
+  CompanySelectorRef,
+} from "./CompanySelector";
 
 interface EndMeetingModalProps {
   isOpen: boolean;
@@ -49,23 +45,30 @@ export function EndMeetingModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Customer employee selection state
-  const [selectedCustomerEmployee, setSelectedCustomerEmployee] =
-    useState<CustomerEmployee | null>(null);
+  // Company selection state
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null,
   );
-  const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
+  const [customerEmployeeName, setCustomerEmployeeName] = useState("");
+  const [customerEmployeeDesignation, setCustomerEmployeeDesignation] = useState("");
+  const [customerEmployeeDepartment, setCustomerEmployeeDepartment] = useState("");
+  const [customerEmployeeEmail, setCustomerEmployeeEmail] = useState("");
+  const [customerEmployeeMobile, setCustomerEmployeeMobile] = useState("");
 
-  // Ref for customer employee selector
-  const customerSelectorRef = useRef<CustomerEmployeeSelectorRef>(null);
+  // Ref for company selector
+  const companySelectorRef = useRef<CompanySelectorRef>(null);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Customer employee selection is mandatory
-    if (!selectedCustomerEmployee) {
-      newErrors.customerEmployee = "Please select a customer employee";
+    // Company selection is mandatory
+    if (!selectedCustomer) {
+      newErrors.company = "Please select a company";
+    }
+
+    // Customer employee name is mandatory
+    if (!customerEmployeeName.trim()) {
+      newErrors.customerEmployeeName = "Customer employee name is required";
     }
 
     // Discussion is mandatory
@@ -111,119 +114,40 @@ export function EndMeetingModal({
     }
   };
 
-  // Handle customer employee selection
-  const handleCustomerEmployeeSelect = (
-    employee: CustomerEmployee,
-    customer: Customer,
-  ) => {
-    setSelectedCustomerEmployee(employee);
+  // Handle company selection
+  const handleCompanySelect = (customer: Customer) => {
     setSelectedCustomer(customer);
 
-    // Auto-fill form data from selected employee
+    // Auto-fill company name in form data
     setFormData((prev) => ({
       ...prev,
       customerName: customer.CustomerCompanyName,
-      customerEmployeeName: employee.CustomerEmpName,
-      customerEmail: employee.Email,
-      customerMobile: employee.Mobile,
-      customerDesignation: employee.Designation,
-      customerDepartment: employee.Department,
     }));
   };
 
-  // Handle adding new customer employee
-  const handleAddNewEmployee = async (
-    employeeData: NewCustomerEmployeeData,
-  ) => {
-    try {
-      // Create a new customer employee object with generated ID
-      const newEmployeeId = `temp_${Date.now()}`;
-      const newEmployee: CustomerEmployee = {
-        _id: newEmployeeId,
-        CustomerEmpName: employeeData.customerEmployeeName,
-        Designation: employeeData.designation,
-        Department: employeeData.department,
-        Mobile: employeeData.mobile,
-        Email: employeeData.email,
-      };
-
-      // Create a temporary customer object if it's a new company
-      const newCustomer: Customer = {
-        _id: `temp_customer_${Date.now()}`,
-        CustomerCompanyName: employeeData.customerName,
-        Employees: [newEmployee],
-        // Fill in other required fields with defaults
-        GstNumber: "",
-        Status: "Active",
-        RJBDSName: "",
-        LedgerType: { _id: "", Name: "", __v: 0 },
-        Dealer: { _id: "", Name: "", __v: 0 },
-        Mode: { _id: "", Name: "", __v: 0 },
-        CompanyName: {
-          _id: "",
-          companyName: employeeData.customerName,
-          __v: 0,
-        },
-        Addresses: [],
-        Gst: "",
-        BusinessType: "",
-        AdharNumber: "",
-        PanNumber: "",
-        ImportExportCode: "",
-        WhatsappNumber: "",
-        OpBalance: 0,
-        BankDetails: {
-          AccountholderName: "",
-          AccountNumber: "",
-          IFSC: "",
-          BankName: "",
-          BranchName: "",
-          AccountType: "",
-        },
-        UploadGSTCertificate: null,
-        UploadAdharCardFront: null,
-        UploadAdharCardBack: null,
-        UploadPanCard: null,
-        CancelledCheque: null,
-        DistributorAuthorizedCertificate: null,
-        UploadImportExportCertificate: null,
-        CustomerId: "",
-        CustomerStatus: "Temporary",
-        updatedAt: new Date().toISOString(),
-        __v: 0,
-      };
-
-      console.log("Creating new customer employee:", employeeData);
-      console.log("Generated employee object:", newEmployee);
-      console.log("Generated customer object:", newCustomer);
-
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Add the new employee to the selector immediately
-      if (customerSelectorRef.current) {
-        console.log("Adding temp employee to selector...");
-        customerSelectorRef.current.addTempEmployee(
-          newEmployee,
-          employeeData.customerName,
-          newCustomer._id,
-        );
-        console.log("Temp employee added to selector");
-      } else {
-        console.error("customerSelectorRef.current is null!");
-      }
-
-      // Automatically select the newly created employee
-      setTimeout(() => {
-        console.log("Auto-selecting newly created employee...");
-        handleCustomerEmployeeSelect(newEmployee, newCustomer);
-      }, 100);
-
-      console.log("Customer employee added successfully!");
-      return { employee: newEmployee, customer: newCustomer };
-    } catch (error) {
-      console.error("Error adding customer employee:", error);
-      throw error;
+  // Handle employee field changes
+  const handleEmployeeFieldChange = (field: string, value: string) => {
+    switch (field) {
+      case "name":
+        setCustomerEmployeeName(value);
+        setFormData(prev => ({ ...prev, customerEmployeeName: value }));
+        break;
+      case "designation":
+        setCustomerEmployeeDesignation(value);
+        setFormData(prev => ({ ...prev, customerDesignation: value }));
+        break;
+      case "department":
+        setCustomerEmployeeDepartment(value);
+        setFormData(prev => ({ ...prev, customerDepartment: value }));
+        break;
+      case "email":
+        setCustomerEmployeeEmail(value);
+        setFormData(prev => ({ ...prev, customerEmail: value }));
+        break;
+      case "mobile":
+        setCustomerEmployeeMobile(value);
+        setFormData(prev => ({ ...prev, customerMobile: value }));
+        break;
     }
   };
 
@@ -237,11 +161,7 @@ export function EndMeetingModal({
     setIsSubmitting(true);
     try {
       await onEndMeeting(formData);
-      console.log("Meeting ended successfully, clearing temp employees");
-      // Clear temporary employees after successful meeting end
-      if (customerSelectorRef.current) {
-        customerSelectorRef.current.clearTempEmployees();
-      }
+      console.log("Meeting ended successfully");
       handleClose();
     } catch (error) {
       console.error("Error ending meeting:", error);
@@ -267,13 +187,16 @@ export function EndMeetingModal({
       discussion: "",
     });
     setErrors({});
-    setSelectedCustomerEmployee(null);
     setSelectedCustomer(null);
-    setIsAddEmployeeOpen(false);
+    setCustomerEmployeeName("");
+    setCustomerEmployeeDesignation("");
+    setCustomerEmployeeDepartment("");
+    setCustomerEmployeeEmail("");
+    setCustomerEmployeeMobile("");
 
-    // Reset the customer employee selector and clear any temporary employees
-    if (customerSelectorRef.current) {
-      customerSelectorRef.current.resetSelection();
+    // Reset the company selector
+    if (companySelectorRef.current) {
+      companySelectorRef.current.resetSelection();
     }
 
     onClose();
@@ -297,71 +220,110 @@ export function EndMeetingModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Customer Employee Selection Header */}
+          {/* Company Selection Header */}
           <div className="flex items-center space-x-2 py-2 border-b">
-            <User className="h-4 w-4 text-primary" />
+            <Building2 className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">
-              Select Customer Employee
+              Select Company & Customer Details
             </span>
           </div>
 
-          {/* Customer Employee Selection */}
+          {/* Company Selection */}
           <div className="space-y-4">
-            <CustomerEmployeeSelector
-              ref={customerSelectorRef}
-              onEmployeeSelect={handleCustomerEmployeeSelect}
-              selectedEmployeeId={selectedCustomerEmployee?._id}
+            <CompanySelector
+              ref={companySelectorRef}
+              onCompanySelect={handleCompanySelect}
+              selectedCustomerId={selectedCustomer?._id}
               disabled={isFormDisabled}
-              onAddNewEmployee={() => setIsAddEmployeeOpen(true)}
             />
-            {errors.customerEmployee && (
+            {errors.company && (
               <div className="flex items-center space-x-1 text-sm text-destructive">
                 <AlertCircle className="h-3 w-3" />
-                <span>{errors.customerEmployee}</span>
+                <span>{errors.company}</span>
               </div>
             )}
 
-            {selectedCustomerEmployee && (
+            {selectedCustomer && (
               <div className="p-4 border rounded-lg bg-muted/20">
                 <div className="flex items-center space-x-2 mb-3">
                   <Building2 className="h-4 w-4 text-primary" />
                   <span className="font-medium text-sm">
-                    Selected Customer Details
+                    Selected Company: {selectedCustomer.CustomerCompanyName}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Company:</span>
-                    <div className="font-medium">
-                      {selectedCustomer?.CustomerCompanyName}
+
+                {/* Customer Employee Details Form */}
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Employee Name */}
+                    <div className="space-y-1">
+                      <Label htmlFor="empName" className="text-xs">
+                        Contact Person Name
+                        <span className="text-destructive ml-1">*</span>
+                      </Label>
+                      <Input
+                        id="empName"
+                        placeholder="Contact person name"
+                        value={customerEmployeeName}
+                        onChange={(e) => handleEmployeeFieldChange("name", e.target.value)}
+                        disabled={isFormDisabled}
+                        className={errors.customerEmployeeName ? "border-destructive" : ""}
+                      />
+                      {errors.customerEmployeeName && (
+                        <p className="text-xs text-destructive">{errors.customerEmployeeName}</p>
+                      )}
+                    </div>
+
+                    {/* Designation */}
+                    <div className="space-y-1">
+                      <Label htmlFor="designation" className="text-xs">Designation</Label>
+                      <Input
+                        id="designation"
+                        placeholder="Position/Title"
+                        value={customerEmployeeDesignation}
+                        onChange={(e) => handleEmployeeFieldChange("designation", e.target.value)}
+                        disabled={isFormDisabled}
+                      />
+                    </div>
+
+                    {/* Department */}
+                    <div className="space-y-1">
+                      <Label htmlFor="department" className="text-xs">Department</Label>
+                      <Input
+                        id="department"
+                        placeholder="Department"
+                        value={customerEmployeeDepartment}
+                        onChange={(e) => handleEmployeeFieldChange("department", e.target.value)}
+                        disabled={isFormDisabled}
+                      />
+                    </div>
+
+                    {/* Email */}
+                    <div className="space-y-1">
+                      <Label htmlFor="empEmail" className="text-xs">Email</Label>
+                      <Input
+                        id="empEmail"
+                        type="email"
+                        placeholder="Email address"
+                        value={customerEmployeeEmail}
+                        onChange={(e) => handleEmployeeFieldChange("email", e.target.value)}
+                        disabled={isFormDisabled}
+                      />
+                    </div>
+
+                    {/* Mobile */}
+                    <div className="space-y-1 col-span-2">
+                      <Label htmlFor="empMobile" className="text-xs">Mobile</Label>
+                      <Input
+                        id="empMobile"
+                        type="tel"
+                        placeholder="Mobile number"
+                        value={customerEmployeeMobile}
+                        onChange={(e) => handleEmployeeFieldChange("mobile", e.target.value)}
+                        disabled={isFormDisabled}
+                      />
                     </div>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Employee:</span>
-                    <div className="font-medium">
-                      {selectedCustomerEmployee.CustomerEmpName}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Position:</span>
-                    <div>{selectedCustomerEmployee.Designation}</div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Department:</span>
-                    <div>{selectedCustomerEmployee.Department}</div>
-                  </div>
-                  {selectedCustomerEmployee.Email && (
-                    <div>
-                      <span className="text-muted-foreground">Email:</span>
-                      <div>{selectedCustomerEmployee.Email}</div>
-                    </div>
-                  )}
-                  {selectedCustomerEmployee.Mobile && (
-                    <div>
-                      <span className="text-muted-foreground">Mobile:</span>
-                      <div>{selectedCustomerEmployee.Mobile}</div>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -424,13 +386,7 @@ export function EndMeetingModal({
           </div>
         </form>
 
-        {/* Add Customer Employee Modal */}
-        <AddCustomerEmployeeModal
-          isOpen={isAddEmployeeOpen}
-          onClose={() => setIsAddEmployeeOpen(false)}
-          onAddEmployee={handleAddNewEmployee}
-          isLoading={isLoading}
-        />
+
       </DialogContent>
     </Dialog>
   );
