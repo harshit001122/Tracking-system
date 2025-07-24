@@ -220,10 +220,15 @@ export default function Tracking() {
 
         // Add to meeting history (always add, even without tracking session)
         try {
+          // Get the current meeting data to extract lead information
+          const currentMeeting = meetings.find(m => m.id === activeMeetingId);
+
           console.log("Attempting to add meeting to history with details:", {
             sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
             employeeId,
             meetingDetails,
+            leadId: currentMeeting?.leadId,
+            leadInfo: currentMeeting?.leadInfo,
           });
 
           const historyResponse = await HttpClient.post(
@@ -232,6 +237,8 @@ export default function Tracking() {
               sessionId: currentTrackingSession?.id || `manual_${Date.now()}`,
               employeeId,
               meetingDetails,
+              leadId: currentMeeting?.leadId,
+              leadInfo: currentMeeting?.leadInfo,
             },
           );
 
