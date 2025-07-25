@@ -376,8 +376,9 @@ export const getEmployeeDetails: RequestHandler = async (req, res) => {
       meetingOutLocation: meeting.location?.address || "",
       totalStayTime: calculateMeetingDuration(meeting.startTime, meeting.endTime),
       discussion: meeting.meetingDetails?.discussion || meeting.notes || "",
-      meetingPerson: meeting.meetingDetails?.customers?.[0]?.customerEmployeeName ||
-                   meeting.meetingDetails?.customerEmployeeName || "Unknown",
+      meetingPerson: meeting.meetingDetails?.customers?.length > 0
+        ? meeting.meetingDetails.customers.map(customer => customer.customerEmployeeName).join(", ")
+        : meeting.meetingDetails?.customerEmployeeName || "Unknown",
     }));
 
     res.json({
