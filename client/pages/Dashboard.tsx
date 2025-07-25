@@ -40,9 +40,33 @@ interface EmployeeAnalytics {
   todayMeetings: number;
   totalMeetingHours: number;
   totalDutyHours: number;
-  recentCustomer?: string;
-  recentLeadId?: string;
   status: "active" | "inactive" | "meeting";
+}
+
+interface EmployeeDayRecord {
+  date: string;
+  totalMeetings: number;
+  startLocationTime: string;
+  startLocationAddress: string;
+  outLocationTime: string;
+  outLocationAddress: string;
+  totalDutyHours: number;
+  meetingTime: number;
+  travelAndLunchTime: number;
+}
+
+interface EmployeeMeetingRecord {
+  employeeName: string;
+  companyName: string;
+  date: string;
+  leadId?: string;
+  meetingInTime: string;
+  meetingInLocation: string;
+  meetingOutTime: string;
+  meetingOutLocation: string;
+  totalStayTime: number;
+  discussion: string;
+  meetingPerson: string;
 }
 
 interface DashboardFilters {
