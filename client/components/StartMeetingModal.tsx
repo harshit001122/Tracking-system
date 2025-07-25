@@ -471,7 +471,11 @@ export function StartMeetingModal({
                   <Select value={selectedLead} onValueChange={setSelectedLead} disabled={loadingLeads}>
                     <SelectTrigger>
                       <SelectValue placeholder={
-                        loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                        loadingLeads
+                          ? "Loading leads..."
+                          : clientName && clientName !== "custom"
+                            ? `Select a lead for ${clientName} (optional)`
+                            : "Select a company first to see related leads"
                       } />
                     </SelectTrigger>
                     <SelectContent>
