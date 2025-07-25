@@ -384,12 +384,11 @@ export default function Dashboard() {
                     <TableRow>
                       <TableHead>Employee Name</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Recent Customer</TableHead>
-                      <TableHead>Lead ID</TableHead>
                       <TableHead className="text-center">Total Meetings</TableHead>
                       <TableHead className="text-center">Today's Meetings</TableHead>
                       <TableHead className="text-center">Meeting Hours</TableHead>
                       <TableHead className="text-center">Duty Hours</TableHead>
+                      <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
