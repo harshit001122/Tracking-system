@@ -216,7 +216,7 @@ export const getEmployeeAnalytics: RequestHandler = async (req, res) => {
     // Calculate analytics for each employee
     const analytics = employees.map(employee => {
       // Get meetings for this employee
-      const employeeMeetings = mockMeetings.filter(meeting => meeting.employeeId === employee.id);
+      const employeeMeetings = actualMeetings.filter(meeting => meeting.employeeId === employee.id);
       
       // Filter meetings by date range
       const meetingsInRange = employeeMeetings.filter(meeting => {
