@@ -453,7 +453,11 @@ export function StartMeetingModal({
                         : []
                     }
                     placeholder={
-                      loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                      loadingLeads
+                        ? "Loading leads..."
+                        : clientName && clientName !== "custom"
+                          ? `Select a lead for ${clientName} (optional)`
+                          : "Select a company first to see related leads"
                     }
                     emptyMessage="No leads available"
                     disabled={loadingLeads}
