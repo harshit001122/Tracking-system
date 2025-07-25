@@ -307,10 +307,7 @@ export function StartMeetingModal({
               <div className="space-y-2">
                 <BasicSelect
                   value={clientName}
-                  onValueChange={(value) => {
-                    console.log("Client selection changed:", value);
-                    setClientName(value);
-                  }}
+                  onValueChange={handleCompanyChange}
                   options={[
                     // Regular customers (deduplicated with better validation)
                     ...(Array.isArray(customers)
