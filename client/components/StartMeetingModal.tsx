@@ -490,7 +490,7 @@ export function StartMeetingModal({
             {selectedLead && (
               <div className="text-xs text-muted-foreground">
                 <FileText className="h-3 w-3 inline mr-1" />
-                Lead selected: {leads.find(l => l.Id === selectedLead)?.Subject}
+                Lead selected: {(clientName && clientName !== "custom" ? filteredLeads : leads).find(l => l.Id === selectedLead)?.Subject}
               </div>
             )}
           </div>
