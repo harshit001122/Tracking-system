@@ -28,6 +28,11 @@ import {
   getMeetingHistory,
   addMeetingToHistory,
 } from "./routes/tracking";
+import {
+  getEmployeeAnalytics,
+  getEmployeeDetails,
+  getMeetingTrends,
+} from "./routes/analytics";
 
 export function createServer() {
   const app = express();
@@ -83,6 +88,11 @@ export function createServer() {
   // Meeting history routes
   app.get("/api/meeting-history", getMeetingHistory);
   app.post("/api/meeting-history", addMeetingToHistory);
+
+  // Analytics routes
+  app.get("/api/analytics/employees", getEmployeeAnalytics);
+  app.get("/api/analytics/employee-details/:employeeId", getEmployeeDetails);
+  app.get("/api/analytics/trends", getMeetingTrends);
 
   return app;
 }

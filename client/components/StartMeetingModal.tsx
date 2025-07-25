@@ -82,6 +82,7 @@ export function StartMeetingModal({
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<string>("");
+  const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
 
   // Fetch customers from external API
   const fetchCustomers = async () => {
@@ -141,12 +142,53 @@ export function StartMeetingModal({
     }
   };
 
+  // Filter leads based on selected company
+  const filterLeadsByCompany = (selectedCompany: string) => {
+    if (!selectedCompany || selectedCompany === "custom" || !Array.isArray(leads)) {
+      setFilteredLeads([]);
+      return;
+    }
+
+    console.log("Filtering leads for company:", selectedCompany);
+
+    const filtered = leads.filter(lead => {
+      if (!lead || !lead.CompanyName) return false;
+
+      // Case-insensitive exact match or partial match
+      const companyMatch = lead.CompanyName.toLowerCase().includes(selectedCompany.toLowerCase()) ||
+                          selectedCompany.toLowerCase().includes(lead.CompanyName.toLowerCase());
+
+      console.log(`Comparing "${lead.CompanyName}" with "${selectedCompany}": ${companyMatch}`);
+      return companyMatch;
+    });
+
+    console.log(`Filtered ${filtered.length} leads for company "${selectedCompany}":`, filtered);
+    setFilteredLeads(filtered);
+  };
+
+  // Handle company selection change
+  const handleCompanyChange = (value: string) => {
+    console.log("Client selection changed:", value);
+    setClientName(value);
+    setSelectedLead(""); // Clear lead selection when company changes
+    filterLeadsByCompany(value);
+  };
+
   useEffect(() => {
     if (isOpen) {
       fetchCustomers();
       fetchLeads();
     }
   }, [isOpen]);
+
+  // Filter leads when leads data or client selection changes
+  useEffect(() => {
+    if (leads.length > 0 && clientName && clientName !== "custom") {
+      filterLeadsByCompany(clientName);
+    } else {
+      setFilteredLeads([]);
+    }
+  }, [leads, clientName]);
 
   const handleSubmit = () => {
     // Validate form
@@ -205,6 +247,7 @@ export function StartMeetingModal({
     setCustomerError(null);
     setLeadError(null);
     setSelectedLead("");
+    setFilteredLeads([]);
     onClose();
   };
 
@@ -265,10 +308,7 @@ export function StartMeetingModal({
               <div className="space-y-2">
                 <BasicSelect
                   value={clientName}
-                  onValueChange={(value) => {
-                    console.log("Client selection changed:", value);
-                    setClientName(value);
-                  }}
+                  onValueChange={handleCompanyChange}
                   options={[
                     // Regular customers (deduplicated with better validation)
                     ...(Array.isArray(customers)
@@ -336,7 +376,14 @@ export function StartMeetingModal({
 
           {/* Lead Selection */}
           <div className="space-y-2">
-            <Label htmlFor="lead">Lead Association (Optional)</Label>
+            <Label htmlFor="lead">
+              Lead Association (Optional)
+              {clientName && clientName !== "custom" && filteredLeads.length > 0 && (
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({filteredLeads.length} leads for {clientName})
+                </span>
+              )}
+            </Label>
             {leadError ? (
               <div className="border border-destructive rounded-md p-3 text-sm text-destructive">
                 <div className="flex items-center space-x-2">
@@ -354,8 +401,15 @@ export function StartMeetingModal({
               </div>
             ) : (
               <>
-                {/* Use SimpleSearchableSelect to avoid cmdk issues */}
-                {leads && leads.length > 0 ? (
+                {/* Show message when company is selected but no leads found */}
+                {clientName && clientName !== "custom" && leads.length > 0 && filteredLeads.length === 0 && (
+                  <div className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-md">
+                    No leads found for "{clientName}". You can still proceed without associating a lead.
+                  </div>
+                )}
+
+                {/* Use filtered leads when company is selected, otherwise show all leads */}
+                {((clientName && clientName !== "custom") ? filteredLeads.length > 0 : leads.length > 0) ? (
                   <BasicSelect
                     value={selectedLead}
                     onValueChange={(value) => {
@@ -363,10 +417,10 @@ export function StartMeetingModal({
                       setSelectedLead(value);
                     }}
                     options={
-                      Array.isArray(leads)
+                      Array.isArray(clientName && clientName !== "custom" ? filteredLeads : leads)
                         ? Array.from(
                             new Map(
-                              leads
+                              (clientName && clientName !== "custom" ? filteredLeads : leads)
                                 .filter(lead => {
                                   const isValid = lead &&
                                     lead.Id &&
@@ -400,9 +454,17 @@ export function StartMeetingModal({
                         : []
                     }
                     placeholder={
-                      loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                      loadingLeads
+                        ? "Loading leads..."
+                        : clientName && clientName !== "custom"
+                          ? `Select a lead for ${clientName} (optional)`
+                          : "Select a company first to see related leads"
                     }
-                    emptyMessage="No leads available"
+                    emptyMessage={
+                      clientName && clientName !== "custom"
+                        ? `No leads found for ${clientName}`
+                        : "No leads available"
+                    }
                     disabled={loadingLeads}
                     searchPlaceholder="Search leads by ID, company, name..."
                   />
@@ -410,7 +472,11 @@ export function StartMeetingModal({
                   <Select value={selectedLead} onValueChange={setSelectedLead} disabled={loadingLeads}>
                     <SelectTrigger>
                       <SelectValue placeholder={
-                        loadingLeads ? "Loading leads..." : "Select a lead (optional)"
+                        loadingLeads
+                          ? "Loading leads..."
+                          : clientName && clientName !== "custom"
+                            ? `Select a lead for ${clientName} (optional)`
+                            : "Select a company first to see related leads"
                       } />
                     </SelectTrigger>
                     <SelectContent>
@@ -425,7 +491,7 @@ export function StartMeetingModal({
             {selectedLead && (
               <div className="text-xs text-muted-foreground">
                 <FileText className="h-3 w-3 inline mr-1" />
-                Lead selected: {leads.find(l => l.Id === selectedLead)?.Subject}
+                Lead selected: {(clientName && clientName !== "custom" ? filteredLeads : leads).find(l => l.Id === selectedLead)?.Subject}
               </div>
             )}
           </div>

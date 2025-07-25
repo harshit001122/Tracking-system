@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HttpClient } from "@/lib/httpClient";
 import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
 import Tracking from "./pages/Tracking";
 import TeamManagement from "./pages/TeamManagement";
 import NotFound from "./pages/NotFound";
@@ -70,6 +71,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tracking/:employeeId" element={<Tracking />} />
           <Route path="/team-management" element={<TeamManagement />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

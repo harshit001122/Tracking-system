@@ -15,6 +15,7 @@ import {
   AlertCircle,
   X,
   Calendar,
+  BarChart3,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Employee, EmployeesResponse } from "@shared/api";
@@ -185,6 +186,12 @@ export default function Index() {
                   className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
                 />
                 Refresh
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/dashboard">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
               </Button>
               <Button variant="outline" size="sm" asChild>
                 <Link to="/team-management">

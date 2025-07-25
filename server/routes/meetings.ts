@@ -6,7 +6,7 @@ import {
 } from "@shared/api";
 
 // In-memory storage for demo purposes
-let meetings: MeetingLog[] = [];
+export let meetings: MeetingLog[] = [];
 
 let meetingIdCounter = 1;
 
@@ -63,7 +63,8 @@ export const getMeetings: RequestHandler = (req, res) => {
 
 export const createMeeting: RequestHandler = (req, res) => {
   try {
-    const { employeeId, location, clientName, notes, leadId, leadInfo } = req.body;
+    const { employeeId, location, clientName, notes, leadId, leadInfo } =
+      req.body;
 
     if (!employeeId || !location) {
       return res.status(400).json({
@@ -114,8 +115,13 @@ export const updateMeeting: RequestHandler = (req, res) => {
 
     // Validate meeting details if provided
     if (updates.meetingDetails) {
-      if (!updates.meetingDetails.discussion || !updates.meetingDetails.discussion.trim()) {
-        return res.status(400).json({ error: "Discussion details are required" });
+      if (
+        !updates.meetingDetails.discussion ||
+        !updates.meetingDetails.discussion.trim()
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Discussion details are required" });
       }
     }
 

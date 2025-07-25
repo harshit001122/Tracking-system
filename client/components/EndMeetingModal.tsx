@@ -288,8 +288,7 @@ export function EndMeetingModal({
     e.preventDefault();
 
     console.log("EndMeetingModal: Form data before validation:", formData);
-    console.log("EndMeetingModal: Selected customer employee:", selectedCustomerEmployee);
-    console.log("EndMeetingModal: Selected customer:", selectedCustomer);
+    console.log("EndMeetingModal: Selected customers:", selectedCustomers);
 
     if (!validateForm()) {
       console.log("EndMeetingModal: Form validation failed");
@@ -299,8 +298,7 @@ export function EndMeetingModal({
     setIsSubmitting(true);
     try {
       console.log("EndMeetingModal: Submitting form data:", formData);
-      console.log("EndMeetingModal: Selected customer employee:", selectedCustomerEmployee);
-      console.log("EndMeetingModal: Selected customer:", selectedCustomer);
+      console.log("EndMeetingModal: Selected customers:", selectedCustomers);
       await onEndMeeting(formData);
       console.log("Meeting ended successfully, clearing temp employees");
       // Clear temporary employees after successful meeting end
