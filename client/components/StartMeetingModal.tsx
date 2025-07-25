@@ -375,7 +375,14 @@ export function StartMeetingModal({
 
           {/* Lead Selection */}
           <div className="space-y-2">
-            <Label htmlFor="lead">Lead Association (Optional)</Label>
+            <Label htmlFor="lead">
+              Lead Association (Optional)
+              {clientName && clientName !== "custom" && filteredLeads.length > 0 && (
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({filteredLeads.length} leads for {clientName})
+                </span>
+              )}
+            </Label>
             {leadError ? (
               <div className="border border-destructive rounded-md p-3 text-sm text-destructive">
                 <div className="flex items-center space-x-2">
