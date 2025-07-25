@@ -521,7 +521,7 @@ export default function Dashboard() {
                   const uniqueDates = Array.from(new Set([
                     ...employeeDayRecords.map(r => r.date),
                     ...employeeMeetingRecords.map(r => r.date)
-                  ])).sort((a, b) => new Date(b).getTime() - new Date(a.time));
+                  ])).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
                   return uniqueDates.map((date, dateIndex) => {
                     const dayRecord = employeeDayRecords.find(r => r.date === date);
