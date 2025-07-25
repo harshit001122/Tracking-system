@@ -30,6 +30,7 @@ import {
 } from "./routes/tracking";
 import {
   getEmployeeAnalytics,
+  getEmployeeDetails,
   getMeetingTrends,
 } from "./routes/analytics";
 
