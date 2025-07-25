@@ -400,8 +400,15 @@ export function StartMeetingModal({
               </div>
             ) : (
               <>
-                {/* Use SimpleSearchableSelect to avoid cmdk issues */}
-                {leads && leads.length > 0 ? (
+                {/* Show message when company is selected but no leads found */}
+                {clientName && clientName !== "custom" && leads.length > 0 && filteredLeads.length === 0 && (
+                  <div className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-md">
+                    No leads found for "{clientName}". You can still proceed without associating a lead.
+                  </div>
+                )}
+
+                {/* Use filtered leads when company is selected, otherwise show all leads */}
+                {((clientName && clientName !== "custom") ? filteredLeads.length > 0 : leads.length > 0) ? (
                   <BasicSelect
                     value={selectedLead}
                     onValueChange={(value) => {
