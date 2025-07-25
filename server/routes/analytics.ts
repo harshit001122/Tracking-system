@@ -311,10 +311,90 @@ function generateMockMeetings(employees: any[], startDate: Date, endDate: Date) 
   return meetings;
 }
 
+export const getEmployeeDetails: RequestHandler = async (req, res) => {
+  try {
+    const { employeeId } = req.params;
+    const { dateRange = "today", startDate, endDate } = req.query;
+
+    // Get date range
+    const { start, end } = getDateRange(
+      dateRange as string,
+      startDate as string,
+      endDate as string
+    );
+
+    console.log(`Fetching employee details for ${employeeId}, date range: ${start} to ${end}`);
+
+    // Get actual meeting data
+    const { meetings: actualMeetings } = await import('./meetings');
+
+    // Filter meetings for this employee within date range
+    const employeeMeetings = actualMeetings.filter(meeting => {
+      const meetingDate = new Date(meeting.startTime);
+      return meeting.employeeId === employeeId &&
+             meetingDate >= start &&
+             meetingDate <= end;
+    });
+
+    // Group by date for day records
+    const dateGroups = employeeMeetings.reduce((groups, meeting) => {
+      const date = format(new Date(meeting.startTime), "yyyy-MM-dd");
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(meeting);
+      return groups;
+    }, {} as Record<string, any[]>);
+
+    // Generate day records
+    const dayRecords = Object.entries(dateGroups).map(([date, meetings]) => {
+      const totalMeetings = meetings.length;
+      const totalMeetingHours = meetings.reduce((total, meeting) => {
+        return total + calculateMeetingDuration(meeting.startTime, meeting.endTime);
+      }, 0);
+
+      return {
+        date,
+        totalMeetings,
+        startLocationTime: meetings[0]?.startTime || "",
+        startLocationAddress: meetings[0]?.location?.address || "",
+        outLocationTime: meetings[meetings.length - 1]?.endTime || "",
+        outLocationAddress: meetings[meetings.length - 1]?.location?.address || "",
+        totalDutyHours: 8, // Placeholder - would calculate from tracking data
+        meetingTime: totalMeetingHours,
+        travelAndLunchTime: Math.max(0, 8 - totalMeetingHours), // Simplified calculation
+      };
+    });
+
+    // Generate meeting records
+    const meetingRecords = employeeMeetings.map(meeting => ({
+      employeeName: "", // Will be filled by client
+      companyName: meeting.clientName || "Unknown Company",
+      date: format(new Date(meeting.startTime), "yyyy-MM-dd"),
+      leadId: meeting.leadId || "",
+      meetingInTime: format(new Date(meeting.startTime), "HH:mm"),
+      meetingInLocation: meeting.location?.address || "",
+      meetingOutTime: meeting.endTime ? format(new Date(meeting.endTime), "HH:mm") : "",
+      meetingOutLocation: meeting.location?.address || "",
+      totalStayTime: calculateMeetingDuration(meeting.startTime, meeting.endTime),
+      discussion: meeting.meetingDetails?.discussion || meeting.notes || "",
+      meetingPerson: meeting.meetingDetails?.customers?.[0]?.customerEmployeeName ||
+                   meeting.meetingDetails?.customerEmployeeName || "Unknown",
+    }));
+
+    res.json({
+      dayRecords: dayRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+      meetingRecords: meetingRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    });
+
+  } catch (error) {
+    console.error("Error fetching employee details:", error);
+    res.status(500).json({ error: "Failed to fetch employee details" });
+  }
+};
+
 export const getMeetingTrends: RequestHandler = async (req, res) => {
   try {
     const { employeeId, period = "week" } = req.query;
-    
+
     // This would calculate meeting trends over time
     // For now, return mock data
     const trends = {
@@ -330,7 +410,7 @@ export const getMeetingTrends: RequestHandler = async (req, res) => {
         }
       ]
     };
-    
+
     res.json(trends);
   } catch (error) {
     console.error("Error fetching meeting trends:", error);
