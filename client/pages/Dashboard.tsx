@@ -400,21 +400,11 @@ export default function Dashboard() {
                         <TableCell>
                           {getStatusBadge(employee.status)}
                         </TableCell>
-                        <TableCell>
-                          {employee.recentCustomer || (
-                            <span className="text-muted-foreground">No recent customer</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {employee.recentLeadId || (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline">{employee.totalMeetings}</Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge 
+                          <Badge
                             variant="outline"
                             className={employee.todayMeetings > 0 ? "bg-success/10 text-success border-success" : ""}
                           >
@@ -432,6 +422,16 @@ export default function Dashboard() {
                             <Clock className="h-3 w-3 text-muted-foreground" />
                             <span>{formatHours(employee.totalDutyHours)}</span>
                           </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEmployeeClick(employee.employeeId, employee.employeeName)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View Details
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
