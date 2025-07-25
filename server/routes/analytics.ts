@@ -237,10 +237,6 @@ export const getEmployeeAnalytics: RequestHandler = async (req, res) => {
       // Calculate duty hours
       const totalDutyHours = calculateDutyHours(employee.id, { start, end });
 
-      // Get most recent meeting info
-      const recentMeeting = employeeMeetings
-        .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())[0];
-
       return {
         employeeId: employee.id,
         employeeName: employee.name,
@@ -248,8 +244,6 @@ export const getEmployeeAnalytics: RequestHandler = async (req, res) => {
         todayMeetings,
         totalMeetingHours,
         totalDutyHours,
-        recentCustomer: recentMeeting?.clientName,
-        recentLeadId: recentMeeting?.leadId,
         status: employee.status,
       };
     });
