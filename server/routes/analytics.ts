@@ -207,9 +207,11 @@ export const getEmployeeAnalytics: RequestHandler = async (req, res) => {
       );
     }
 
-    // Import meetings data (this would normally be from a shared module or database)
-    // For now, we'll create some mock meeting data
-    const mockMeetings = generateMockMeetings(employees, start, end);
+    // Get actual meeting data from the meetings module
+    // Import the meetings array from meetings.ts
+    const { meetings: actualMeetings } = await import('./meetings');
+
+    console.log("Using actual meetings data:", actualMeetings);
 
     // Calculate analytics for each employee
     const analytics = employees.map(employee => {
