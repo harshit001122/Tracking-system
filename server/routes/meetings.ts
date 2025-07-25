@@ -6,7 +6,7 @@ import {
 } from "@shared/api";
 
 // In-memory storage for demo purposes
-let meetings: MeetingLog[] = [];
+export let meetings: MeetingLog[] = [];
 
 let meetingIdCounter = 1;
 
