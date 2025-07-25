@@ -459,7 +459,11 @@ export function StartMeetingModal({
                           ? `Select a lead for ${clientName} (optional)`
                           : "Select a company first to see related leads"
                     }
-                    emptyMessage="No leads available"
+                    emptyMessage={
+                      clientName && clientName !== "custom"
+                        ? `No leads found for ${clientName}`
+                        : "No leads available"
+                    }
                     disabled={loadingLeads}
                     searchPlaceholder="Search leads by ID, company, name..."
                   />
