@@ -407,88 +407,238 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Analytics Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Employee Analytics</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Detailed breakdown of employee performance and meeting statistics
-            </p>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading analytics...</p>
-              </div>
-            ) : analytics.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No data available for the selected filters</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Employee Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-center">Total Meetings</TableHead>
-                      <TableHead className="text-center">Today's Meetings</TableHead>
-                      <TableHead className="text-center">Meeting Hours</TableHead>
-                      <TableHead className="text-center">Duty Hours</TableHead>
-                      <TableHead className="text-center">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {analytics.map((employee) => (
-                      <TableRow key={employee.employeeId}>
-                        <TableCell className="font-medium">
-                          {employee.employeeName}
-                        </TableCell>
-                        <TableCell>
-                          {getStatusBadge(employee.status)}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline">{employee.totalMeetings}</Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge
-                            variant="outline"
-                            className={employee.todayMeetings > 0 ? "bg-success/10 text-success border-success" : ""}
-                          >
-                            {employee.todayMeetings}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex items-center justify-center space-x-1">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span>{formatHours(employee.totalMeetingHours)}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex items-center justify-center space-x-1">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span>{formatHours(employee.totalDutyHours)}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEmployeeClick(employee.employeeId, employee.employeeName)}
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            View Details
-                          </Button>
-                        </TableCell>
+        {/* Conditional Content: Analytics Table or Employee Details */}
+        {!selectedEmployee ? (
+          /* Main Analytics Table */
+          <Card>
+            <CardHeader>
+              <CardTitle>Employee Analytics</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Detailed breakdown of employee performance and meeting statistics
+              </p>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading analytics...</p>
+                </div>
+              ) : analytics.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No data available for the selected filters</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Employee Name</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-center">Total Meetings</TableHead>
+                        <TableHead className="text-center">Today's Meetings</TableHead>
+                        <TableHead className="text-center">Meeting Hours</TableHead>
+                        <TableHead className="text-center">Duty Hours</TableHead>
+                        <TableHead className="text-center">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {analytics.map((employee) => (
+                        <TableRow key={employee.employeeId}>
+                          <TableCell className="font-medium">
+                            {employee.employeeName}
+                          </TableCell>
+                          <TableCell>
+                            {getStatusBadge(employee.status)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline">{employee.totalMeetings}</Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge
+                              variant="outline"
+                              className={employee.todayMeetings > 0 ? "bg-success/10 text-success border-success" : ""}
+                            >
+                              {employee.todayMeetings}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center space-x-1">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span>{formatHours(employee.totalMeetingHours)}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center space-x-1">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span>{formatHours(employee.totalDutyHours)}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEmployeeClick(employee.employeeId, employee.employeeName)}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              View Details
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          /* Employee Details View */
+          <div className="space-y-6">
+            {/* Back Button */}
+            <Card>
+              <CardContent className="pt-6">
+                <Button onClick={handleBackToList} variant="outline">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Employee List
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Employee Details Tables */}
+            {loadingDetails ? (
+              <Card>
+                <CardContent className="py-12">
+                  <div className="text-center">
+                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading employee details...</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {/* Group records by date and render with colors */}
+                {(() => {
+                  const uniqueDates = Array.from(new Set([
+                    ...employeeDayRecords.map(r => r.date),
+                    ...employeeMeetingRecords.map(r => r.date)
+                  ])).sort((a, b) => new Date(b).getTime() - new Date(a.time));
+
+                  return uniqueDates.map((date, dateIndex) => {
+                    const dayRecord = employeeDayRecords.find(r => r.date === date);
+                    const meetingRecordsForDate = employeeMeetingRecords.filter(r => r.date === date);
+                    const colorClass = getDateColor(date, dateIndex);
+
+                    return (
+                      <div key={date} className={`p-4 rounded-lg border-2 ${colorClass}`}>
+                        <h3 className="text-lg font-semibold mb-4">
+                          {format(new Date(date), "EEEE, MMMM dd, yyyy")}
+                        </h3>
+
+                        {/* Daily Summary Table */}
+                        {dayRecord && (
+                          <Card className="mb-4">
+                            <CardHeader>
+                              <CardTitle className="text-sm">Daily Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="overflow-x-auto">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow className={colorClass}>
+                                      <TableHead>Date</TableHead>
+                                      <TableHead>Total Meetings</TableHead>
+                                      <TableHead>Start Location Time</TableHead>
+                                      <TableHead>Start Location Address</TableHead>
+                                      <TableHead>Out Location Time</TableHead>
+                                      <TableHead>Out Location Address</TableHead>
+                                      <TableHead>Total Duty Hours</TableHead>
+                                      <TableHead>Meeting Time</TableHead>
+                                      <TableHead>Travel & Lunch Time</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    <TableRow className={`${colorClass} opacity-80`}>
+                                      <TableCell>{format(new Date(dayRecord.date), "MM/dd/yyyy")}</TableCell>
+                                      <TableCell>{dayRecord.totalMeetings}</TableCell>
+                                      <TableCell>{dayRecord.startLocationTime ? format(new Date(dayRecord.startLocationTime), "HH:mm") : "-"}</TableCell>
+                                      <TableCell>{dayRecord.startLocationAddress || "-"}</TableCell>
+                                      <TableCell>{dayRecord.outLocationTime ? format(new Date(dayRecord.outLocationTime), "HH:mm") : "-"}</TableCell>
+                                      <TableCell>{dayRecord.outLocationAddress || "-"}</TableCell>
+                                      <TableCell>{formatHours(dayRecord.totalDutyHours)}</TableCell>
+                                      <TableCell>{formatHours(dayRecord.meetingTime)}</TableCell>
+                                      <TableCell>{formatHours(dayRecord.travelAndLunchTime)}</TableCell>
+                                    </TableRow>
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+
+                        {/* Meeting Details Table */}
+                        {meetingRecordsForDate.length > 0 && (
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="text-sm">Meeting Details</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="overflow-x-auto">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow className={colorClass}>
+                                      <TableHead>Employee Name</TableHead>
+                                      <TableHead>Company Name</TableHead>
+                                      <TableHead>Date</TableHead>
+                                      <TableHead>Lead ID</TableHead>
+                                      <TableHead>Meeting In Time</TableHead>
+                                      <TableHead>Meeting In Location</TableHead>
+                                      <TableHead>Meeting Out Time</TableHead>
+                                      <TableHead>Meeting Out Location</TableHead>
+                                      <TableHead>Total Stay Time</TableHead>
+                                      <TableHead>Discussion</TableHead>
+                                      <TableHead>Meeting Person</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {meetingRecordsForDate.map((record, index) => (
+                                      <TableRow key={index} className={`${colorClass} opacity-80`}>
+                                        <TableCell>{analytics.find(emp => emp.employeeId === selectedEmployee)?.employeeName || record.employeeName}</TableCell>
+                                        <TableCell>{record.companyName}</TableCell>
+                                        <TableCell>{format(new Date(record.date), "MM/dd/yyyy")}</TableCell>
+                                        <TableCell>{record.leadId || "-"}</TableCell>
+                                        <TableCell>{record.meetingInTime}</TableCell>
+                                        <TableCell>{record.meetingInLocation}</TableCell>
+                                        <TableCell>{record.meetingOutTime}</TableCell>
+                                        <TableCell>{record.meetingOutLocation}</TableCell>
+                                        <TableCell>{formatHours(record.totalStayTime)}</TableCell>
+                                        <TableCell className="max-w-xs truncate">{record.discussion || "-"}</TableCell>
+                                        <TableCell>{record.meetingPerson}</TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
+
+                {employeeDayRecords.length === 0 && employeeMeetingRecords.length === 0 && (
+                  <Card>
+                    <CardContent className="py-12">
+                      <div className="text-center">
+                        <p className="text-muted-foreground">No data available for the selected employee and date range</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </div>
     </div>
   );
