@@ -247,6 +247,7 @@ export function StartMeetingModal({
     setCustomerError(null);
     setLeadError(null);
     setSelectedLead("");
+    setFilteredLeads([]);
     onClose();
   };
 
