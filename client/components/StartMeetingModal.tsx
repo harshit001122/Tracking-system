@@ -142,12 +142,53 @@ export function StartMeetingModal({
     }
   };
 
+  // Filter leads based on selected company
+  const filterLeadsByCompany = (selectedCompany: string) => {
+    if (!selectedCompany || selectedCompany === "custom" || !Array.isArray(leads)) {
+      setFilteredLeads([]);
+      return;
+    }
+
+    console.log("Filtering leads for company:", selectedCompany);
+
+    const filtered = leads.filter(lead => {
+      if (!lead || !lead.CompanyName) return false;
+
+      // Case-insensitive exact match or partial match
+      const companyMatch = lead.CompanyName.toLowerCase().includes(selectedCompany.toLowerCase()) ||
+                          selectedCompany.toLowerCase().includes(lead.CompanyName.toLowerCase());
+
+      console.log(`Comparing "${lead.CompanyName}" with "${selectedCompany}": ${companyMatch}`);
+      return companyMatch;
+    });
+
+    console.log(`Filtered ${filtered.length} leads for company "${selectedCompany}":`, filtered);
+    setFilteredLeads(filtered);
+  };
+
+  // Handle company selection change
+  const handleCompanyChange = (value: string) => {
+    console.log("Client selection changed:", value);
+    setClientName(value);
+    setSelectedLead(""); // Clear lead selection when company changes
+    filterLeadsByCompany(value);
+  };
+
   useEffect(() => {
     if (isOpen) {
       fetchCustomers();
       fetchLeads();
     }
   }, [isOpen]);
+
+  // Filter leads when leads data or client selection changes
+  useEffect(() => {
+    if (leads.length > 0 && clientName && clientName !== "custom") {
+      filterLeadsByCompany(clientName);
+    } else {
+      setFilteredLeads([]);
+    }
+  }, [leads, clientName]);
 
   const handleSubmit = () => {
     // Validate form
