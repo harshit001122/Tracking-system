@@ -82,6 +82,7 @@ export function StartMeetingModal({
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<string>("");
+  const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
 
   // Fetch customers from external API
   const fetchCustomers = async () => {
