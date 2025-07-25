@@ -86,6 +86,12 @@ export default function Dashboard() {
     searchTerm: "",
   });
 
+  // Detailed employee view state
+  const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
+  const [employeeDayRecords, setEmployeeDayRecords] = useState<EmployeeDayRecord[]>([]);
+  const [employeeMeetingRecords, setEmployeeMeetingRecords] = useState<EmployeeMeetingRecord[]>([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
   // Summary statistics
   const [summaryStats, setSummaryStats] = useState({
     totalEmployees: 0,
