@@ -416,10 +416,10 @@ export function StartMeetingModal({
                       setSelectedLead(value);
                     }}
                     options={
-                      Array.isArray(leads)
+                      Array.isArray(clientName && clientName !== "custom" ? filteredLeads : leads)
                         ? Array.from(
                             new Map(
-                              leads
+                              (clientName && clientName !== "custom" ? filteredLeads : leads)
                                 .filter(lead => {
                                   const isValid = lead &&
                                     lead.Id &&
