@@ -171,11 +171,9 @@ export default function Dashboard() {
 
   const exportData = () => {
     const csvContent = [
-      ["Employee Name", "Customer", "Lead ID", "Total Meetings", "Today's Meetings", "Meeting Hours", "Duty Hours"],
+      ["Employee Name", "Total Meetings", "Today's Meetings", "Meeting Hours", "Duty Hours"],
       ...analytics.map(emp => [
         emp.employeeName,
-        emp.recentCustomer || "-",
-        emp.recentLeadId || "-",
         emp.totalMeetings.toString(),
         emp.todayMeetings.toString(),
         `${emp.totalMeetingHours.toFixed(1)}h`,
@@ -190,6 +188,54 @@ export default function Dashboard() {
     a.download = `employee-analytics-${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleEmployeeClick = async (employeeId: string, employeeName: string) => {
+    setSelectedEmployee(employeeId);
+    setLoadingDetails(true);
+    try {
+      // Fetch detailed employee data
+      const response = await HttpClient.get(`/api/analytics/employee-details/${employeeId}?${new URLSearchParams({
+        dateRange: filters.dateRange,
+        ...(filters.startDate && { startDate: filters.startDate }),
+        ...(filters.endDate && { endDate: filters.endDate })
+      })}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setEmployeeDayRecords(data.dayRecords || []);
+        setEmployeeMeetingRecords(data.meetingRecords || []);
+      } else {
+        console.error("Failed to fetch employee details");
+        setEmployeeDayRecords([]);
+        setEmployeeMeetingRecords([]);
+      }
+    } catch (error) {
+      console.error("Error fetching employee details:", error);
+      setEmployeeDayRecords([]);
+      setEmployeeMeetingRecords([]);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const handleBackToList = () => {
+    setSelectedEmployee(null);
+    setEmployeeDayRecords([]);
+    setEmployeeMeetingRecords([]);
+  };
+
+  // Generate color for date
+  const getDateColor = (date: string, index: number) => {
+    const colors = [
+      'bg-blue-50 border-blue-200 text-blue-900',
+      'bg-green-50 border-green-200 text-green-900',
+      'bg-purple-50 border-purple-200 text-purple-900',
+      'bg-orange-50 border-orange-200 text-orange-900',
+      'bg-pink-50 border-pink-200 text-pink-900',
+      'bg-indigo-50 border-indigo-200 text-indigo-900',
+    ];
+    return colors[index % colors.length];
   };
 
   const formatHours = (hours: number) => {
