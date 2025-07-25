@@ -91,6 +91,7 @@ export function createServer() {
 
   // Analytics routes
   app.get("/api/analytics/employees", getEmployeeAnalytics);
+  app.get("/api/analytics/employee-details/:employeeId", getEmployeeDetails);
   app.get("/api/analytics/trends", getMeetingTrends);
 
   return app;
