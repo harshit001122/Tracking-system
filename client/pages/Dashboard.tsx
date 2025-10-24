@@ -237,6 +237,8 @@ export default function Dashboard() {
     }
   };
 
+  console.log("log in dashboard");
+  
   const handleFilterChange = (key: keyof DashboardFilters, value: string) => {
     setFilters((prev) => {
       const newFilters = {
